@@ -62,4 +62,11 @@
         "algorithm": "cpp"
     },
     "terminal.integrated.inheritEnv": false,
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/workspaces/SPL_Assignment1/bin",
+            "binaryPath": "/workspaces/SPL_Assignment1/bin/main",
+            "binaryArgs": []
+        }
+    ],
 }
