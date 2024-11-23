@@ -19,6 +19,7 @@ enum class FacilityCategory {
 class FacilityType {
     public:
         FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score);
+        FacilityType(FacilityType &type);
         const string &getName() const;
         int getCost() const;
         int getLifeQualityScore() const;
@@ -48,6 +49,7 @@ class Facility: public FacilityType {
         void setStatus(FacilityStatus status);
         const FacilityStatus& getStatus() const;
         const string toString() const;
+        const string toStringStatus() const;
 
     private:
         const string settlementName;
