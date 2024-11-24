@@ -31,6 +31,8 @@ NaiveSelection* NaiveSelection::clone() const {
 //do i need to implement? 
 NaiveSelection::~NaiveSelection(){}
 
+virtual const string returntype() const override{return "nve";}
+
 
 
 
@@ -74,6 +76,8 @@ BalancedSelection* BalancedSelection::clone() const {
 //destructor -what to do here
 BalancedSelection::~BalancedSelection(){}
 
+virtual const string returntype() const override{return "bal";}
+
 
 
 
@@ -113,6 +117,8 @@ EconomySelection* EconomySelection::clone() const {
 
 //destructor -what to do here
 EconomySelection::~EconomySelection(){}
+
+virtual const string returntype() const override{return "eco";}
 
 
 
@@ -154,3 +160,5 @@ SustainabilitySelection* SustainabilitySelection::clone() const {
 
 //destructor -what to do here
 SustainabilitySelection::~SustainabilitySelection(){}
+
+virtual const string returntype() const override{return "env";}
