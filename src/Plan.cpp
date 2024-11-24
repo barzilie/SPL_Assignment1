@@ -58,10 +58,30 @@ void Plan::step(){
 
 }
 
-void Plan::printStatus(){}
+void Plan::printStatus(){
+    std::cout << this->toString << std::endl;
+    std::cout << "SettlementName:" << settlement->getName()<< std::endl;
+    switch(status){
+        case PlanStatus::AVALIABLE:
+            std::cout << "PlanStatus:AVALIABLE" << std::endl;
+        case PlanStatus::BUSY:
+            std::cout << "PlanStatus:BUSY" << std::endl;
+    }
+    std::cout << "SelectionPolicy:" << selectionPolicy->returntype() <<std::endl;
+    std::cout << "LifeQualityScore:" << this->getlifeQualityScore()<< std::endl;
+    std::cout << "EconomyScore:" << this->getEconomyScore()<< std::endl;
+    std::cout << "EnvrionmentScore:" << this->getEnvironmentScore()<< std::endl;
+    for (Facility f: facilities){
+        std::cout << f->toString()<< std::endl;
+        std::cout << f->toStringStatus()<< std::endl;
+    }
 
-const vector<Facility*>& Plan::getFacilities() const{}
+}
 
-void Plan::addFacility(Facility* facility){}
+const vector<Facility*>& Plan::getFacilities() const{return facilities;}
 
-const string Plan::toString() const{}
+void Plan::addFacility(Facility* facility){
+    facilityOptions.insert(facilityOptions.begin,facility);
+}
+
+const string Plan::toString() const{return "PlanID:" + plan_id;}
