@@ -89,7 +89,7 @@ const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>&
     bool found = false;
     int index = lastSelectedIndex+1;
     while(!found){
-        if (facilitiesOptions[index].getCategory() == 1){
+        if (facilitiesOptions[index].getCategory() == FacilityCategory::ECONOMY){
             found = true;
             lastSelectedIndex = index;
             return facilitiesOptions[lastSelectedIndex];
@@ -130,13 +130,13 @@ const FacilityType& SustainabilitySelection::selectFacility(const vector<Facilit
     bool found = false;
     int index = lastSelectedIndex+1;
     while(!found){
-        if (facilitiesOptions[index].getCategory() == 2){
+        if (facilitiesOptions[index].getCategory() == FacilityCategory::ENVIRONMENT){
             found = true;
             lastSelectedIndex = index;
             return facilitiesOptions[lastSelectedIndex];
         }
         else{
-            index = (index+1)%(facilitiesOptions.size);
+            index = (index+1)%(facilitiesOptions.size());
         }
     }
     return facilitiesOptions[lastSelectedIndex];
