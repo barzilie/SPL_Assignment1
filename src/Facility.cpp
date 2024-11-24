@@ -1,56 +1,62 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "Facility.h"
 using std::string;
 using std::vector;
 
-enum class FacilityStatus {
-    UNDER_CONSTRUCTIONS,
-    OPERATIONAL,
-};
+//FacilityType: constructor and copy constructor
+//may require a copy assignment constructor and destructor by the rule of 5!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+FacilityType::FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score):
+name(name), category(category), price(price), lifeQuality_score(lifeQuality_score), economy_score(economy_score), environment_score(environment_score){}
 
-enum class FacilityCategory {
-    LIFE_QUALITY,
-    ECONOMY,
-    ENVIRONMENT,
-};
+FacilityType::FacilityType(FacilityType &type):
+name(type.name), category(type.category), price(type.price), lifeQuality_score(type.lifeQuality_score),economy_score(type.economy_score), environment_score(type.environment_score){}
 
+//FacilityType: methods
+const string& FacilityType::getName() const {return name;}
 
-class FacilityType {
-    public:
-        FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score);
-        const string &getName() const;
-        int getCost() const;
-        int getLifeQualityScore() const;
-        int getEnvironmentScore() const;
-        int getEconomyScore() const;
-        FacilityCategory getCategory() const;
+int FacilityType::getCost() const {return price;}
 
-    protected:
-        const string name;
-        const FacilityCategory category;
-        const int price;
-        const int lifeQuality_score;
-        const int economy_score;
-        const int environment_score;
-};
+int FacilityType::getLifeQualityScore() const{return lifeQuality_score;}
+
+int FacilityType::getEnvironmentScore() const{return environment_score;}
+
+int FacilityType::getEconomyScore() const{return economy_score;}
+
+FacilityCategory FacilityType::getCategory() const{return category;}
 
 
+//FacilityType: constructor
+Facility::Facility(const string &name, const string &settlementName, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score):
+FacilityType(name, category, price, lifeQuality_score, economy_score, environment_score), settlementName(settlementName), status(FacilityStatus::UNDER_CONSTRUCTIONS), timeLeft(price){}
 
-class Facility: public FacilityType {
+Facility::Facility(FacilityType &type, const string &settlementName): 
+FacilityType(type), settlementName(settlementName), status(FacilityStatus::UNDER_CONSTRUCTIONS), timeLeft(type.getCost()){}
 
-    public:
-        Facility(const string &name, const string &settlementName, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score);
-        Facility(FacilityType &type, const string &settlementName);
-        const string &getSettlementName() const;
-        const int getTimeLeft() const;
-        FacilityStatus step();
-        void setStatus(FacilityStatus status);
-        const FacilityStatus& getStatus() const;
-        const string toString() const;
+//FacilityType: methods
+const string& Facility::getSettlementName() const{return settlementName;}
 
-    private:
-        const string settlementName;
-        FacilityStatus status;
-        int timeLeft;
-};
+const int Facility::getTimeLeft() const{return timeLeft;}
+
+FacilityStatus Facility::step(){
+    timeLeft = getTimeLeft()-1;
+    if (timeLeft == 0){setStatus(FacilityStatus::OPERATIONAL);}
+    //DONT FORGET ADD TO FACILITES LIST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}
+
+void Facility::setStatus(FacilityStatus status){this->status = status;}
+
+const FacilityStatus& Facility::getStatus() const{return status;}
+
+const string Facility::toString() const{return "FacilityName:"+name;}
+
+const string Facility::toStringStatus() const{
+    FacilityStatus currentStatus = this->getStatus();
+    switch(currentStatus){
+        case FacilityStatus::OPERATIONAL:
+            return "Facilitystatus: OPERATIONAL";
+        case FacilityStatus::UNDER_CONSTRUCTIONS:
+            return "Facilitystatus: UNDER_CONSTRUCTIONS";}
+}
+
