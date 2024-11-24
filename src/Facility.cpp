@@ -43,6 +43,7 @@ FacilityStatus Facility::step(){
     timeLeft = getTimeLeft()-1;
     if (timeLeft == 0){setStatus(FacilityStatus::OPERATIONAL);}
     //DONT FORGET ADD TO FACILITES LIST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    return getStatus();
 }
 
 void Facility::setStatus(FacilityStatus status){this->status = status;}
@@ -58,5 +59,6 @@ const string Facility::toStringStatus() const{
             return "Facilitystatus: OPERATIONAL";
         case FacilityStatus::UNDER_CONSTRUCTIONS:
             return "Facilitystatus: UNDER_CONSTRUCTIONS";}
+    return "";
 }
 

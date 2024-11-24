@@ -1,5 +1,7 @@
 #pragma once
 #include <vector>
+#include <algorithm>
+#include <climits>
 #include "Facility.h"
 #include "SelectionPolicy.h"
 using std::vector;
@@ -31,7 +33,7 @@ NaiveSelection* NaiveSelection::clone() const {
 //do i need to implement? 
 NaiveSelection::~NaiveSelection(){}
 
-virtual const string returntype() const override{return "nve";}
+const string NaiveSelection::returntype() const {return "nve";}
 
 
 
@@ -46,14 +48,16 @@ BalancedSelection::BalancedSelection(const BalancedSelection &bs):LifeQualitySco
 
 const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
     vector<int> diffs;  
-    diffs.reserve(facilitiesOptions.size);
+    diffs.reserve(facilitiesOptions.size());
     int indexOfMin = 0;
     int minDiff = INT_MAX;
-    for(int i = 0; i<facilitiesOptions.size; i++){
+    for(int i = 0; i<facilitiesOptions.size(); i++){
         FacilityType current = facilitiesOptions[i];
-        vector<int> scores = {this->EconomyScore + current.getEconomyScore, this->EnvironmentScore + current.getEnvironmentScore, this->LifeQualityScore + current.getLifeQualityScore};
-        int maximum = max(scores);
-        int minimum = min(scores);
+        vector<int> scores = {this->EconomyScore + current.getEconomyScore(), this->EnvironmentScore + current.getEnvironmentScore(), this->LifeQualityScore + current.getLifeQualityScore()};
+        auto maxi = max_element(scores.begin(), scores.end());
+        auto mini = min_element(scores.begin(), scores.end());
+        int maximum = *maxi;
+        int minimum = *mini;
         diffs[i] = maximum - minimum;
         if (diffs[i] < minDiff) {
             minDiff = diffs[i];
@@ -65,7 +69,7 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
 
 
 const string BalancedSelection::toString() const {
-    return "Balanced Selection: LifeQualityScore is "+ toString(LifeQualityScore) +", EconomyScore is "+ toString(EconomyScore) +", EnvironmentScore is "+ toString(EnvironmentScore); 
+    return "Balanced Selection: LifeQualityScore is "+std::to_string(LifeQualityScore) +", EconomyScore is "+std::to_string(EconomyScore) +", EnvironmentScore is "+std::to_string(EnvironmentScore); 
 }
     
 
@@ -76,7 +80,7 @@ BalancedSelection* BalancedSelection::clone() const {
 //destructor -what to do here
 BalancedSelection::~BalancedSelection(){}
 
-virtual const string returntype() const override{return "bal";}
+const string BalancedSelection::returntype() const {return "bal";}
 
 
 
@@ -118,7 +122,7 @@ EconomySelection* EconomySelection::clone() const {
 //destructor -what to do here
 EconomySelection::~EconomySelection(){}
 
-virtual const string returntype() const override{return "eco";}
+const string EconomySelection::returntype() const {return "eco";}
 
 
 
@@ -161,4 +165,4 @@ SustainabilitySelection* SustainabilitySelection::clone() const {
 //destructor -what to do here
 SustainabilitySelection::~SustainabilitySelection(){}
 
-virtual const string returntype() const override{return "env";}
+const string SustainabilitySelection::returntype() const {return "env";}
