@@ -10,7 +10,7 @@ using std::vector;
 FacilityType::FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score):
 name(name), category(category), price(price), lifeQuality_score(lifeQuality_score), economy_score(economy_score), environment_score(environment_score){}
 
-FacilityType::FacilityType(FacilityType &type):
+FacilityType::FacilityType(const FacilityType &type):
 name(type.name), category(type.category), price(type.price), lifeQuality_score(type.lifeQuality_score),economy_score(type.economy_score), environment_score(type.environment_score){}
 
 //FacilityType: methods
@@ -27,14 +27,14 @@ int FacilityType::getEconomyScore() const{return economy_score;}
 FacilityCategory FacilityType::getCategory() const{return category;}
 
 
-//FacilityType: constructor
+//Facility: constructor
 Facility::Facility(const string &name, const string &settlementName, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score):
 FacilityType(name, category, price, lifeQuality_score, economy_score, environment_score), settlementName(settlementName), status(FacilityStatus::UNDER_CONSTRUCTIONS), timeLeft(price){}
 
-Facility::Facility(FacilityType &type, const string &settlementName): 
+Facility::Facility(const FacilityType &type, const string &settlementName): 
 FacilityType(type), settlementName(settlementName), status(FacilityStatus::UNDER_CONSTRUCTIONS), timeLeft(type.getCost()){}
 
-//FacilityType: methods
+//Facility: methods
 const string& Facility::getSettlementName() const{return settlementName;}
 
 const int Facility::getTimeLeft() const{return timeLeft;}
