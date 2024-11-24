@@ -7,13 +7,14 @@ class SelectionPolicy {
     public:
         virtual const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) = 0;
         virtual const string toString() const = 0;
-        virtual SelectionPolicy* clone() const = 0;
+        virtual SelectionPolicy *clone() const = 0;
         virtual ~SelectionPolicy() = default;
 };
 
 class NaiveSelection: public SelectionPolicy {
     public:
         NaiveSelection();
+        NaiveSelection(const NaiveSelection &ns); //new copy constructor
         const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
         const string toString() const override;
         NaiveSelection *clone() const override;
@@ -25,6 +26,7 @@ class NaiveSelection: public SelectionPolicy {
 class BalancedSelection: public SelectionPolicy {
     public:
         BalancedSelection(int LifeQualityScore, int EconomyScore, int EnvironmentScore);
+        BalancedSelection(const BalancedSelection &bs); //new copy constructor
         const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
         const string toString() const override;
         BalancedSelection *clone() const override;
@@ -32,7 +34,7 @@ class BalancedSelection: public SelectionPolicy {
     private:
         int LifeQualityScore;
         int EconomyScore;
-        int EnvironmentScore;
+        int EnvironmentScore;  
 };
 
 class EconomySelection: public SelectionPolicy {
