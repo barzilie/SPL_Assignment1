@@ -1,5 +1,7 @@
 #pragma once
 #include <vector>
+#include <algorithm>
+#include <climits>
 #include "Facility.h"
 #include "SelectionPolicy.h"
 using std::vector;
@@ -19,9 +21,7 @@ const FacilityType& NaiveSelection::selectFacility(const vector<FacilityType>& f
     return facilitiesOptions[lastSelectedIndex];
 }
 
-const string NaiveSelection::toString() const {
-    return "Naive Selection: last index that was selected is "+lastSelectedIndex;
-}
+const string NaiveSelection::toString() const {return "nve";}
 
 
 NaiveSelection* NaiveSelection::clone() const {
@@ -30,9 +30,6 @@ NaiveSelection* NaiveSelection::clone() const {
 
 //do i need to implement? 
 NaiveSelection::~NaiveSelection(){}
-
-virtual const string returntype() const override{return "nve";}
-
 
 
 
@@ -46,14 +43,16 @@ BalancedSelection::BalancedSelection(const BalancedSelection &bs):LifeQualitySco
 
 const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
     vector<int> diffs;  
-    diffs.reserve(facilitiesOptions.size);
+    diffs.reserve(facilitiesOptions.size());
     int indexOfMin = 0;
     int minDiff = INT_MAX;
-    for(int i = 0; i<facilitiesOptions.size; i++){
+    for(int i = 0; i<facilitiesOptions.size(); i++){
         FacilityType current = facilitiesOptions[i];
-        vector<int> scores = {this->EconomyScore + current.getEconomyScore, this->EnvironmentScore + current.getEnvironmentScore, this->LifeQualityScore + current.getLifeQualityScore};
-        int maximum = max(scores);
-        int minimum = min(scores);
+        vector<int> scores = {this->EconomyScore + current.getEconomyScore(), this->EnvironmentScore + current.getEnvironmentScore(), this->LifeQualityScore + current.getLifeQualityScore()};
+        auto maxi = max_element(scores.begin(), scores.end());
+        auto mini = min_element(scores.begin(), scores.end());
+        int maximum = *maxi;
+        int minimum = *mini;
         diffs[i] = maximum - minimum;
         if (diffs[i] < minDiff) {
             minDiff = diffs[i];
@@ -64,9 +63,7 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
 }
 
 
-const string BalancedSelection::toString() const {
-    return "Balanced Selection: LifeQualityScore is "+ LifeQualityScore +", EconomyScore is "+ EconomyScore +", EnvironmentScore is "+ EnvironmentScore; 
-}
+const string BalancedSelection::toString() const {return "bal";}
     
 
 BalancedSelection* BalancedSelection::clone() const {
@@ -75,8 +72,6 @@ BalancedSelection* BalancedSelection::clone() const {
 
 //destructor -what to do here
 BalancedSelection::~BalancedSelection(){}
-
-virtual const string returntype() const override{return "bal";}
 
 
 
@@ -93,22 +88,20 @@ const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>&
     bool found = false;
     int index = lastSelectedIndex+1;
     while(!found){
-        if (facilitiesOptions[index].getCategory() == 1){
+        if (facilitiesOptions[index].getCategory() == FacilityCategory::ECONOMY){
             found = true;
             lastSelectedIndex = index;
             return facilitiesOptions[lastSelectedIndex];
         }
         else{
-            index = (index+1)%(facilitiesOptions.size);
+            index = (index+1)%(facilitiesOptions.size());
         }
     }
     return facilitiesOptions[lastSelectedIndex];
 }
 
 
-const string EconomySelection::toString() const {
-    return "Economy Selection: last index that was selected is "+lastSelectedIndex;
-}
+const string EconomySelection::toString() const {return "eco";}
     
 
 EconomySelection* EconomySelection::clone() const {
@@ -117,8 +110,6 @@ EconomySelection* EconomySelection::clone() const {
 
 //destructor -what to do here
 EconomySelection::~EconomySelection(){}
-
-virtual const string returntype() const override{return "eco";}
 
 
 
@@ -136,22 +127,20 @@ const FacilityType& SustainabilitySelection::selectFacility(const vector<Facilit
     bool found = false;
     int index = lastSelectedIndex+1;
     while(!found){
-        if (facilitiesOptions[index].getCategory() == 2){
+        if (facilitiesOptions[index].getCategory() == FacilityCategory::ENVIRONMENT){
             found = true;
             lastSelectedIndex = index;
             return facilitiesOptions[lastSelectedIndex];
         }
         else{
-            index = (index+1)%(facilitiesOptions.size);
+            index = (index+1)%(facilitiesOptions.size());
         }
     }
     return facilitiesOptions[lastSelectedIndex];
 }
 
 
-const string SustainabilitySelection::toString() const {
-    return "Sustainability Selection: last index that was selected is "+lastSelectedIndex;
-}
+const string SustainabilitySelection::toString() const {return "env";}
     
 
 SustainabilitySelection* SustainabilitySelection::clone() const {
@@ -160,5 +149,3 @@ SustainabilitySelection* SustainabilitySelection::clone() const {
 
 //destructor -what to do here
 SustainabilitySelection::~SustainabilitySelection(){}
-
-virtual const string returntype() const override{return "env";}

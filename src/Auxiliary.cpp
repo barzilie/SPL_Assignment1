@@ -4,7 +4,14 @@
 #include <sstream>
 #include <string>
 
-class Auxiliary{
-    public:
-        static std::vector<std::string> parseArguments(const std::string& line);
-};
+
+static std::vector<std::string> Auxiliary::parseArguments(const std::string& line){
+    std::vector<std::string> result;
+    std::stringstream ss (s);
+    std::string item;
+    while (getline (ss, argu, ' ')) {
+        result.push_back (argu);
+    }
+
+    return result;
+}

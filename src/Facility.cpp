@@ -43,20 +43,22 @@ FacilityStatus Facility::step(){
     timeLeft = getTimeLeft()-1;
     if (timeLeft == 0){setStatus(FacilityStatus::OPERATIONAL);}
     //DONT FORGET ADD TO FACILITES LIST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    return getStatus();
 }
 
-void Facility::setStatus(FacilityStatus status){this->status = status;}
+void Facility::setStatus(FacilityStatus status){this.status = status;}
 
 const FacilityStatus& Facility::getStatus() const{return status;}
 
 const string Facility::toString() const{return "FacilityName:"+name;}
 
 const string Facility::toStringStatus() const{
-    FacilityStatus currentStatus = this->getStatus();
+    FacilityStatus currentStatus = this.getStatus();
     switch(currentStatus){
         case FacilityStatus::OPERATIONAL:
             return "Facilitystatus: OPERATIONAL";
         case FacilityStatus::UNDER_CONSTRUCTIONS:
             return "Facilitystatus: UNDER_CONSTRUCTIONS";}
+    return "";
 }
 
