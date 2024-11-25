@@ -13,7 +13,6 @@ class SelectionPolicy {
         virtual const string toString() const = 0;
         virtual SelectionPolicy *clone() const = 0;
         virtual ~SelectionPolicy() = default;
-        virtual const string returntype() const = 0;
 };
 
 class NaiveSelection: public SelectionPolicy {
@@ -24,7 +23,6 @@ class NaiveSelection: public SelectionPolicy {
         const string toString() const override;
         NaiveSelection *clone() const override;
         ~NaiveSelection() override = default;
-        virtual const string returntype() const override;
     private:
         int lastSelectedIndex;
 };
@@ -37,7 +35,6 @@ class BalancedSelection: public SelectionPolicy {
         const string toString() const override;
         BalancedSelection *clone() const override;
         ~BalancedSelection() override = default;
-        virtual const string returntype() const override;
     private:
         int LifeQualityScore;
         int EconomyScore;
@@ -51,7 +48,6 @@ class EconomySelection: public SelectionPolicy {
         const string toString() const override;
         EconomySelection *clone() const override;
         ~EconomySelection() override = default;
-        virtual const string returntype() const override;
     private:
         int lastSelectedIndex;
 
@@ -64,7 +60,6 @@ class SustainabilitySelection: public SelectionPolicy {
         const string toString() const override;
         SustainabilitySelection *clone() const override;
         ~SustainabilitySelection() override = default;
-        virtual const string returntype() const override;
     private:
         int lastSelectedIndex;
 };

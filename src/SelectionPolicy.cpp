@@ -21,9 +21,7 @@ const FacilityType& NaiveSelection::selectFacility(const vector<FacilityType>& f
     return facilitiesOptions[lastSelectedIndex];
 }
 
-const string NaiveSelection::toString() const {
-    return "Naive Selection: last index that was selected is "+lastSelectedIndex;
-}
+const string NaiveSelection::toString() const {return "nve";}
 
 
 NaiveSelection* NaiveSelection::clone() const {
@@ -32,9 +30,6 @@ NaiveSelection* NaiveSelection::clone() const {
 
 //do i need to implement? 
 NaiveSelection::~NaiveSelection(){}
-
-const string NaiveSelection::returntype() const {return "nve";}
-
 
 
 
@@ -68,9 +63,7 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
 }
 
 
-const string BalancedSelection::toString() const {
-    return "Balanced Selection: LifeQualityScore is "+std::to_string(LifeQualityScore) +", EconomyScore is "+std::to_string(EconomyScore) +", EnvironmentScore is "+std::to_string(EnvironmentScore); 
-}
+const string BalancedSelection::toString() const {return "bal";}
     
 
 BalancedSelection* BalancedSelection::clone() const {
@@ -79,8 +72,6 @@ BalancedSelection* BalancedSelection::clone() const {
 
 //destructor -what to do here
 BalancedSelection::~BalancedSelection(){}
-
-const string BalancedSelection::returntype() const {return "bal";}
 
 
 
@@ -110,9 +101,7 @@ const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>&
 }
 
 
-const string EconomySelection::toString() const {
-    return "Economy Selection: last index that was selected is "+lastSelectedIndex;
-}
+const string EconomySelection::toString() const {return "eco";}
     
 
 EconomySelection* EconomySelection::clone() const {
@@ -121,8 +110,6 @@ EconomySelection* EconomySelection::clone() const {
 
 //destructor -what to do here
 EconomySelection::~EconomySelection(){}
-
-const string EconomySelection::returntype() const {return "eco";}
 
 
 
@@ -153,9 +140,7 @@ const FacilityType& SustainabilitySelection::selectFacility(const vector<Facilit
 }
 
 
-const string SustainabilitySelection::toString() const {
-    return "Sustainability Selection: last index that was selected is "+lastSelectedIndex;
-}
+const string SustainabilitySelection::toString() const {return "env";}
     
 
 SustainabilitySelection* SustainabilitySelection::clone() const {
@@ -164,5 +149,3 @@ SustainabilitySelection* SustainabilitySelection::clone() const {
 
 //destructor -what to do here
 SustainabilitySelection::~SustainabilitySelection(){}
-
-const string SustainabilitySelection::returntype() const {return "env";}

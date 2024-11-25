@@ -37,6 +37,8 @@ class Plan {
 //Plan: constructor
 Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions):
 plan_id(plan_id), settlement(settlement), status(PlanStatus::AVALIABLE), life_quality_score(0), economy_score(0), environment_score(0), facilities{}, underConstruction{}, facilityOptions{} {}
+//note for selectionPolicy pointer!!!
+
 
 //Plan: methods
 const int Plan::getlifeQualityScore() const{return life_quality_score;}
@@ -67,7 +69,7 @@ void Plan::printStatus(){
         case PlanStatus::BUSY:
             std::cout << "PlanStatus:BUSY" << std::endl;
     }
-    std::cout << "SelectionPolicy:" << selectionPolicy->returntype() <<std::endl;
+    std::cout << "SelectionPolicy:" << selectionPolicy->toString() <<std::endl;
     std::cout << "LifeQualityScore:" << this->getlifeQualityScore()<< std::endl;
     std::cout << "EconomyScore:" << this->getEconomyScore()<< std::endl;
     std::cout << "EnvrionmentScore:" << this->getEnvironmentScore()<< std::endl;
