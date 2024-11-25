@@ -54,7 +54,7 @@ void Plan::step(){
         Facility* f = underConstruction.at(i);
         f->step();
         if (f->getStatus()==FacilityStatus::OPERATIONAL){
-            facilities.insert(facilities.end(),f);
+            facilities.push_back(f);
             underConstruction.erase(underConstruction.begin()+i);}
     }
 
@@ -83,7 +83,7 @@ void Plan::printStatus(){
 const vector<Facility*>& Plan::getFacilities() const{return facilities;}
 
 void Plan::addFacility(Facility* facility){
-    facilityOptions.insert(facilityOptions.begin,facility);
+    facilityOptions.push_back(facility);
 }
 
 const string Plan::toString() const{return "PlanID:" + plan_id;}
