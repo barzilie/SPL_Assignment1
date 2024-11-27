@@ -20,9 +20,21 @@ class Simulation {
         bool addSettlement(Settlement *settlement);
         bool addFacility(FacilityType facility);
         bool isSettlementExists(const string &settlementName);
-        bool isFacilityExists(const string &facilityName);
+        bool isFacilityExists(const string &facilityName); //added function
+        bool isPlanExists(const int planId); //added function
         Settlement &getSettlement(const string &settlementName);
-        Plan &getPlan(const int planID);
+        Plan &getPlan(const int planId);
+        bool changePlanPolicy(const int planId, const string &newPolicy);
+
+        //rule of 3 additions
+        Simulation(const Simulation& other);
+        Simulation& operator=(const Simulation& other);
+        ~Simulation(); 
+
+        //rule of 5 additions
+        Simulation(Simulation&& other);
+        Simulation& operator=(Simulation&& other);
+
         void step();
         void close();
         void open();
