@@ -17,8 +17,9 @@ NaiveSelection::NaiveSelection(const NaiveSelection &ns):lastSelectedIndex(ns.la
 
 
 const FacilityType& NaiveSelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
-    lastSelectedIndex++;
-    return facilitiesOptions[lastSelectedIndex];
+    int current_index = lastSelectedIndex;
+    lastSelectedIndex = (lastSelectedIndex+1)%(facilitiesOptions.size());
+    return facilitiesOptions[current_index];
 }
 
 const string NaiveSelection::toString() const {return "nve";}
@@ -27,9 +28,6 @@ const string NaiveSelection::toString() const {return "nve";}
 NaiveSelection* NaiveSelection::clone() const {
     return new NaiveSelection(*this);
 }
-
-//do i need to implement? 
-NaiveSelection::~NaiveSelection(){}
 
 
 
@@ -70,8 +68,6 @@ BalancedSelection* BalancedSelection::clone() const {
     return new BalancedSelection(*this);
 }
 
-//destructor -what to do here
-BalancedSelection::~BalancedSelection(){}
 
 
 
@@ -86,18 +82,19 @@ EconomySelection::EconomySelection(const EconomySelection &ecs):lastSelectedInde
 
 const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
     bool found = false;
-    int index = lastSelectedIndex+1;
+    int index = lastSelectedIndex;
     while(!found){
         if (facilitiesOptions[index].getCategory() == FacilityCategory::ECONOMY){
             found = true;
-            lastSelectedIndex = index;
-            return facilitiesOptions[lastSelectedIndex];
+            int current_index = index;
+            lastSelectedIndex = (index+1)%(facilitiesOptions.size()); 
+            FacilityType& output = facilitiesOptions[current_index];
         }
         else{
             index = (index+1)%(facilitiesOptions.size());
         }
     }
-    return facilitiesOptions[lastSelectedIndex];
+    return output;
 }
 
 
@@ -107,9 +104,6 @@ const string EconomySelection::toString() const {return "eco";}
 EconomySelection* EconomySelection::clone() const {
     return new EconomySelection(*this);
 }
-
-//destructor -what to do here
-EconomySelection::~EconomySelection(){}
 
 
 
@@ -125,18 +119,20 @@ SustainabilitySelection::SustainabilitySelection(const SustainabilitySelection &
 
 const FacilityType& SustainabilitySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
     bool found = false;
-    int index = lastSelectedIndex+1;
+    int index = lastSelectedIndex;
     while(!found){
         if (facilitiesOptions[index].getCategory() == FacilityCategory::ENVIRONMENT){
             found = true;
-            lastSelectedIndex = index;
-            return facilitiesOptions[lastSelectedIndex];
+            int current_index = index;
+            lastSelectedIndex = (index+1)%(facilitiesOptions.size()); 
+            FacilityType& output = facilitiesOptions[current_index];
         }
         else{
             index = (index+1)%(facilitiesOptions.size());
         }
     }
-    return facilitiesOptions[lastSelectedIndex];
+    return output;
+
 }
 
 
@@ -146,6 +142,3 @@ const string SustainabilitySelection::toString() const {return "env";}
 SustainabilitySelection* SustainabilitySelection::clone() const {
     return new SustainabilitySelection(*this);
 }
-
-//destructor -what to do here
-SustainabilitySelection::~SustainabilitySelection(){}
