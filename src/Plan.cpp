@@ -3,17 +3,15 @@
 #include "Facility.h"
 #include "Settlement.h"
 #include "SelectionPolicy.h"
+#include "Plan.h"
 using std::vector;
 
 //Plan: constructor
 Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions):
-plan_id(plan_id), settlement(settlement), status(PlanStatus::AVALIABLE), selectionPolicy(selectionPolicy), life_quality_score(0), economy_score(0), environment_score(0), facilities{}, underConstruction{}, facilityOptions{} {}
-//Plan: copy constructor WHAT ABOUT UNDERCONSTRUCTION AND FACILTYOPTIONS?????????????????????
-Plan::Plan(const Plan& other):plan_id(other.plan_id), settlement(other.settlement), status(other.status), life_quality_score(other.getlifeQualityScore), economy_score(other.getEconomyScore), environment_score(other.getEnvironmentScore), facilities(other.getFacilities), underConstruction{}, facilityOptions{} {
-    this->selectionPolicy = other.selectionPolicy->clone();
+plan_id(plan_id), settlement(settlement), status(PlanStatus::AVALIABLE), selectionPolicy(selectionPolicy), life_quality_score(0), economy_score(0), environment_score(0), facilities{}, underConstruction{}, facilityOptions{} {
 }
-//Plan: copy assignment constructor - NOT REQUIRED
-//Plan: destructor
+// Plan: copy constructor and copy assignment operator - NOT REQUIRED
+// Plan: destructor
 Plan::~Plan(){
     delete selectionPolicy;
     for (Facility* f: facilities){
@@ -21,10 +19,7 @@ Plan::~Plan(){
     }
     for (Facility* f: underConstruction){
         delete f;
-    }   
-}
-
-
+    }}
 
 //Plan: methods
 const int Plan::getlifeQualityScore() const{return life_quality_score;}
@@ -51,6 +46,9 @@ void Plan::step(){
         Facility* f = underConstruction.at(i);
         if (f->step()==FacilityStatus::OPERATIONAL){
             facilities.push_back(f);
+            this->economy_score = this->economy_score + f->getEconomyScore();
+            this->environment_score = this->economy_score + f->getEnvironmentScore();
+            this->life_quality_score = this->economy_score + f->getLifeQualityScore();
             underConstruction.erase(underConstruction.begin()+i);}
     }
 
@@ -80,8 +78,13 @@ const vector<Facility*>& Plan::getFacilities() const{return facilities;}
 
 void Plan::addFacility(Facility* facility){
     underConstruction.push_back(facility);
+
 }
 
 const string Plan::toString() const{return "PlanID:" + this->plan_id;}
 
 const int Plan::getID() const{return this->plan_id;}
+
+const string Plan::getSelectionPolicy() const{return this->selectionPolicy->toString();}
+
+//add 3 methods that returns the grades of the under construction faciliy scores ask amit about the name

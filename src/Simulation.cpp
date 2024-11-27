@@ -69,7 +69,7 @@ Simulation::Simulation(const string &configFilePath):isRunning(false), planCount
                 case "plan":
                     switch(args[2]){
                         case "bal":
-                            plans.push_back(Plan::Plan(planCounter, args[1], new BalancedSelection::BalancedSelection(), facilitiesOptions));
+                            plans.push_back(Plan::Plan(planCounter, args[1], new BalancedSelection::BalancedSelection(0,0,0), facilitiesOptions));
                         case "eco":
                             plans.push_back(Plan::Plan(planCounter, args[1], new EconomySelection::EconomySelection(), facilitiesOptions));
                         case "nve":

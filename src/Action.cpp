@@ -27,17 +27,59 @@ class BaseAction{
         string errorMsg;
         ActionStatus status;
 };
+//BaseAction: protected methods
+void BaseAction::complete(){this->status = "COMPLETED"}
+void BaseAction::error(this->errorMsg){this->status = "ERROR";
+    std::cout << errorMsg << std::endl;}
 
-class SimulateStep : public BaseAction {
+//SimulateStep: constructor
+SimulateStep::SimulateStep(const int numOfSteps):errorMsg(""),status("RUNNING"), numOfSteps(numOfSteps){}
 
-    public:
-        const int numOfSteps;
-};
+//SimulateStep: copy constructor
+SimulateStep::SimulateStep(const SimulateStep &other):errorMsg(other.errorMsg),status(other.status), numOfSteps(other.numOfSteps){}
 
-class AddPlan : public BaseAction {
-        const string settlementName;
-        const string selectionPolicy;
-};
+//SimulateStep: methods
+void SimulateStep::act(Simulation &simulation) {
+    while(this->numOfSteps>0){
+        simulation->step();
+        this->numOfSteps--;
+    }  
+    this->complete(); 
+}
+
+const string SimulateStep::toString() const {return "step " << this->numOfSteps << " " << this->status;}
+
+ SimulateStep* SimulateStep::clone() const {return new SimulateStep(*this);}
+
+//AddPlan: constructor
+AddPlan::AddPlan(const string &settlementName, const string &selectionPolicy):errorMsg("”Cannot create this plan”"), status("RUNNING"), settlementName(settlementName), selectionPolicy(selectionPolicy){}
+
+//AddPlan: copy constructor
+AddPlan::AddPlan(const AddPlan &other):errorMsg(other.errorMsg),status(other.status), settlementName(other.settlementName), selectionPolicy(other.selectionPolicy){}
+
+//AddPlan: methods
+AddPlan::act(Simulation &simulation){
+    if (!Simulation.isSettlementExists(this->settlementName)){
+        error();
+    }
+    switch(this->selectionPolicy){
+        case "bal":
+            simulation.addPlan(Simulation.getSettlement(this->settlementName),new BalancedSelection());
+        case "eco":
+            simulation.addPlan(Simulation.getSettlement(this->settlementName),new EconomySelection());
+        case "nve":
+            simulation.addPlan(Simulation.getSettlement(this->settlementName),new NaiveSelection());
+        case "env":
+            simulation.addPlan(Simulation.getSettlement(this->settlementName),new SustainabilitySelection());
+        default:
+            error();
+    }
+    complete();
+}
+
+AddPlan::toString()
+
+AddPlan::clone()
 
 
 class AddSettlement : public BaseAction {
