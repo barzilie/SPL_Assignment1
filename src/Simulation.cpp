@@ -58,10 +58,10 @@ Simulation::Simulation(const string &configFilePath):isRunning(true), planCounte
                     const std::array<FacilityCategory, 3> category = {FacilityCategory::LIFE_QUALITY, FacilityCategory::ECONOMY, FacilityCategory::ENVIRONMENT};
                     facilitiesOptions.push_back(FacilityType::FacilityType(args[1], category[stoi(args[2])],stoi(args[3]), stoi(args[4]), stoi(args[5]), stoi(args[6])));
                 //# plan <settlement_name> <selection_policy>
-                case "plan":
+                case "plan":                    
                     switch(args[1]){
                         case "bal":
-                            plans.push_back(Plan::Plan(planCounter, args[0], BalancedSelection::BalancedSelection(), facilitiesOptions));
+                            plans.push_back(Plan::Plan(planCounter, args[0], BalancedSelection::BalancedSelection(0,0,0), facilitiesOptions));
                         case "eco":
                             plans.push_back(Plan::Plan(planCounter, args[0], EconomySelection::EconomySelection(), facilitiesOptions));
                         case "nve":

@@ -9,6 +9,6 @@ using std::vector;
 Settlement::Settlement(const string &name, SettlementType type):name(name), type(type){}
 
 //methods
-const string & Settlement::getName() const{return name;}
+const string &Settlement::getName() const{return name;}
 SettlementType Settlement::getType() const{return type;}
-const string Settlement::toString() const{return "SettlementName: "+name;}
+const string Settlement::toString() const{return "SettlementName: "+ name;}
