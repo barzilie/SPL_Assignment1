@@ -10,34 +10,7 @@ using std::string;
 using std::vector;
 using namespace std;
 
-class BaseAction;
-class SelectionPolicy;
 
-class Simulation {
-    public:
-        Simulation(const string &configFilePath);
-        void start();
-        void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy);
-        void addAction(BaseAction *action);
-        bool addSettlement(Settlement *settlement);
-        bool addFacility(FacilityType facility);
-        bool isSettlementExists(const string &settlementName);
-        bool isFacilityExists(const string &facilityName);
-        Settlement &getSettlement(const string &settlementName);
-        Plan &getPlan(const int planID);
-        void step();
-        void close();
-        void open();
-
-    private:
-        bool isRunning;
-        int planCounter; //For assigning unique plan IDs
-        vector<BaseAction*> actionsLog;
-        vector<Plan> plans;
-        vector<Settlement*> settlements;
-        vector<FacilityType> facilitiesOptions;
-
-};
 Simulation::Simulation(const string &configFilePath):isRunning(false), planCounter(0), actionsLog{}, plans{}, settlements{}, facilitiesOptions{} {
     std::ifstream file(configFilePath);
     //
@@ -88,6 +61,11 @@ Simulation::Simulation(const string &configFilePath):isRunning(false), planCount
 void Simulation::start(){
     isRunning = true;
     cout << "The simulation has started" << endl;
+    while(isRunning){
+    //string userInput;
+   // getline(cin, userInput);
+
+    }
     //wait to input from user (action to execute)?  
     //string userInput;
    // getline(cin, userInput);
@@ -141,6 +119,12 @@ bool Simulation::isFacilityExists(const string &facilityName){
     });
 }
 
+ bool Simulation::isPlanExists(const int planId){
+
+    bool planExists = any_of(plans.begin(), plans.end(), [planId](const Plan& p) {
+    return p.getID() == planId;
+    });
+ }
 
 Settlement& Simulation::getSettlement(const string &settlementName){
     return *std::find_if(settlements.begin(), settlements.end(), [settlementName](const Settlement& sett){
@@ -148,19 +132,70 @@ Settlement& Simulation::getSettlement(const string &settlementName){
         });
 }
 
- Plan& Simulation::getPlan(const int planID){
-    return *std::find_if(plans.begin(), plans.end(), [&planID](const Plan& p){
-    return p.getID() == planID
+Plan& Simulation::getPlan(const int planId){
+    return *std::find_if(plans.begin(), plans.end(), [planId](const Plan& p){
+    return p.getID() == planId
     });
  }
 
+ bool Simulation::changePlanPolicy(const int planId, const string &newPolicy){
+    if (!isPlanExists(planId)){
+        return false;
+    }
+    if(newPolicy != "nve" & )
+    string planSP = this->getPlan(planId).getSelectionPolicy();
+    if (planSP == newPolicy){
+        return false;
+    }
+
+    switch(newPolicy){
+        Plan p = Plan(getPlan(planId));
+        case "bal":
+            int LifeQualityScore = p.getlifeQualityScore() + p.getLQS_underConstruction();
+            int EconomyScore = p.getEconomyScore() + p.getECS_underConstruction();
+            int EnvironmentScore = p.getEnvironmentScore() + p.getENS_underConstruction();
+            this->getPlan(planId).setSelectionPolicy(new BalancedSelection(LifeQualityScore, EconomyScore, EnvironmentScore));
+        case "eco":
+            this->getPlan(planId).setSelectionPolicy(new EconomySelection());
+        case "nve":
+            this->getPlan(planId).setSelectionPolicy(new NaiveSelection());
+        case "env":
+            this->getPlan(planId).setSelectionPolicy(new SustainabilitySelection());
+    }
+
+ }
+
+
+//rule of 3 additions
+ Simulation(const Simulation& other);
+ Simulation& operator=(const Simulation& other);
+
+ Simulation:: ~Simulation (){
+    for(BaseAction* ba: actionsLog){
+        delete ba;
+    }
+    for(Settlement* s: settlements){
+        delete s;
+    }
+ }
+
+
+//rule of 5 additions
+Simulation(Simulation&& other);
+Simulation& operator=(Simulation&& other);
+
 
 void Simulation::step(){
-
+    for(Plan p: plans){
+        p.step();
+    }
 }
 
 void Simulation::close(){
-
+    for(Plan p: plans){
+        p.printStatus();
+    }
+    isRunning = false;
 }
 
 void Simulation::open(){
