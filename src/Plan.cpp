@@ -82,4 +82,6 @@ void Plan::addFacility(Facility* facility){
     underConstruction.push_back(facility);
 }
 
-const string Plan::toString() const{return "PlanID:" + plan_id;}
+const string Plan::toString() const{return "PlanID:" + this->plan_id;}
+
+const int Plan::getID() const{return this->plan_id;}
