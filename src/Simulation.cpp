@@ -3,6 +3,10 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
+#include <iostream>
+#include <array>
+#include "Auxiliary.h"
+#include "Simulation.h"
 #include "Facility.h"
 #include "Plan.h"
 #include "Settlement.h"
@@ -17,7 +21,7 @@ Simulation::Simulation(const string &configFilePath):isRunning(false), planCount
     // open config file
     if (!file.is_open()) {
         std::cerr << "Error opening file" << std::endl;
-        return 1;
+        // return 1; //the compiler didnt like returning ftom constructor
     }
     //necessery?^
     std::string line;
@@ -59,7 +63,7 @@ Simulation::Simulation(const string &configFilePath):isRunning(false), planCount
 
 
 void Simulation::start(){
-    isRunning = true;
+    this->isRunning = true;
     cout << "The simulation has started" << endl;
     while(isRunning){
     //string userInput;
@@ -106,54 +110,121 @@ bool Simulation::addFacility(FacilityType facility){
 }
 
 bool Simulation::isSettlementExists(const string &settlementName){
-  
-    bool settExists = any_of(settlements.begin(), settlements.end(), [settlementName](const Settlement& sett) {
+    for(Settlement* s: settlements){
+        if(s->getName() == settlementName){
+            return true;
+        }
+    }
+    return false;
+    /*
+        bool settExists = any_of(settlements.begin(), settlements.end(), [settlementName](const Settlement& sett){
         return sett.getName() == settlementName;
     });
+    */
+
 }
 
 bool Simulation::isFacilityExists(const string &facilityName){
-
-    bool facExists = any_of(facilitiesOptions.begin(), facilitiesOptions.end(), [facilityName](const FacilityType& fac) {
+    for(FacilityType f: facilitiesOptions){
+        if(f.getName() == facilityName){
+            return true;
+        }
+    }
+    return false;
+    /*
+        bool facExists = any_of(facilitiesOptions.begin(), facilitiesOptions.end(), [facilityName](const FacilityType& fac) {
     return fac.getName() == facilityName;
     });
+    */
+
 }
 
  bool Simulation::isPlanExists(const int planId){
+    for(Plan p: plans){
+        if(p.getID() == planId){
+            return true;
+        }
+    }
+    return false;
 
-    bool planExists = any_of(plans.begin(), plans.end(), [planId](const Plan& p) {
+    /*
+       bool planExists = any_of(plans.begin(), plans.end(), [planId](const Plan& p) {
     return p.getID() == planId;
     });
+    */
+ 
  }
 
 Settlement& Simulation::getSettlement(const string &settlementName){
-    return *std::find_if(settlements.begin(), settlements.end(), [settlementName](const Settlement& sett){
+    for(Settlement* s: settlements){
+        if(s->getName() == settlementName){
+            return *s;
+        }
+    }
+    return Settlement("invalid", SettlementType::VILLAGE);
+
+    // what can i do here?
+    /*
+        return *std::find_if(settlements.begin(), settlements.end(), [settlementName](const Settlement& sett){
         return sett.getName() == settlementName
         });
+    */
+
 }
 
 Plan& Simulation::getPlan(const int planId){
-    return *std::find_if(plans.begin(), plans.end(), [planId](const Plan& p){
+    for(Plan p: plans){
+        if(p.getID() == planId){
+            return p;
+        }
+    }
+    return p;
+    /*
+        return *std::find_if(plans.begin(), plans.end(), [planId](const Plan& p){
     return p.getID() == planId
     });
+    */
+
  }
 
  bool Simulation::changePlanPolicy(const int planId, const string &newPolicy){
     if (!isPlanExists(planId)){
         return false;
     }
-    if(newPolicy != "nve" & )
+    if(newPolicy != "nve" && newPolicy != "bal" && newPolicy != "eco" && newPolicy != "env"){
+        return false;
+    }
     string planSP = this->getPlan(planId).getSelectionPolicy();
     if (planSP == newPolicy){
         return false;
     }
 
+    Plan p = Plan(getPlan(planId));
+
+    if(newPolicy == "bal"){
+        int LifeQualityScore = p.getlifeQualityScore() + p.getlifeQualityScore_UC();
+        int EconomyScore = p.getEconomyScore() + p.getEconomyScore_UC();
+        int EnvironmentScore = p.getEnvironmentScore() + p.getEnvironmentScore_UC();
+        this->getPlan(planId).setSelectionPolicy(new BalancedSelection(LifeQualityScore, EconomyScore, EnvironmentScore));
+    }
+    else if(newPolicy == "eco"){
+        this->getPlan(planId).setSelectionPolicy(new EconomySelection());
+    }
+    else if(newPolicy == "nve"){
+        this->getPlan(planId).setSelectionPolicy(new NaiveSelection());
+    }
+    else if(newPolicy == "env"){
+        this->getPlan(planId).setSelectionPolicy(new SustainabilitySelection());
+    }
+
+/*
+
     switch(newPolicy){
         Plan p = Plan(getPlan(planId));
         case "bal":
-            int LifeQualityScore = p.getlifeQualityScore() + p.getLQS_underConstruction();
-            int EconomyScore = p.getEconomyScore() + p.getECS_underConstruction();
-            int EnvironmentScore = p.getEnvironmentScore() + p.getENS_underConstruction();
+            int LifeQualityScore = p.getlifeQualityScore() + p.getlifeQualityScore_UC();
+            int EconomyScore = p.getEconomyScore() + p.getEconomyScore_UC();
+            int EnvironmentScore = p.getEnvironmentScore() + p.getEnvironmentScore_UC();
             this->getPlan(planId).setSelectionPolicy(new BalancedSelection(LifeQualityScore, EconomyScore, EnvironmentScore));
         case "eco":
             this->getPlan(planId).setSelectionPolicy(new EconomySelection());
@@ -162,6 +233,10 @@ Plan& Simulation::getPlan(const int planId){
         case "env":
             this->getPlan(planId).setSelectionPolicy(new SustainabilitySelection());
     }
+
+*/
+
+
 
  }
 

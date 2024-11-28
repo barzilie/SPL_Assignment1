@@ -1,14 +1,17 @@
 #pragma once
 #include <vector>
+#include <iostream>
+#include <ostream>
 #include "Facility.h"
 #include "Settlement.h"
 #include "SelectionPolicy.h"
 #include "Plan.h"
 using std::vector;
+using namespace std;
 
 //Plan: constructor
 Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions):
-plan_id(plan_id), settlement(settlement), status(PlanStatus::AVALIABLE), selectionPolicy(selectionPolicy), life_quality_score(0), economy_score(0), environment_score(0), facilities{}, underConstruction{}, facilityOptions{} {
+plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), status(PlanStatus::AVALIABLE), facilities{}, underConstruction{}, facilityOptions{}, life_quality_score(0), economy_score(0), environment_score(0) {
 }
 // Plan: copy constructor and copy assignment operator - NOT REQUIRED
 // Plan: destructor
@@ -55,7 +58,7 @@ void Plan::step(){
 }
 
 void Plan::printStatus(){
-    std::cout << this->toString << std::endl;
+    std::cout << this->toString() << std::endl;
     std::cout << settlement.toString()<< std::endl;
     switch(status){
         case PlanStatus::AVALIABLE:
@@ -67,9 +70,9 @@ void Plan::printStatus(){
     std::cout << "LifeQualityScore:" << this->getlifeQualityScore()<< std::endl;
     std::cout << "EconomyScore:" << this->getEconomyScore()<< std::endl;
     std::cout << "EnvrionmentScore:" << this->getEnvironmentScore()<< std::endl;
-    for (Facility f: facilities){
-        std::cout << f.toString()<< std::endl;
-        std::cout << f.toStringStatus()<< std::endl;
+    for (Facility* f: facilities){
+        std::cout << f->toString()<< std::endl;
+        std::cout << f->toStringStatus()<< std::endl;
     }
 
 }
@@ -78,6 +81,12 @@ const vector<Facility*>& Plan::getFacilities() const{return facilities;}
 
 void Plan::addFacility(Facility* facility){
     underConstruction.push_back(facility);
+    //do we need to increment the score of the balanced selection (if using it)?
+    
+    /*
+       if(this->getSelectionPolicy == "bal"){
+        this->s
+    */
 
 }
 
@@ -87,4 +96,30 @@ const int Plan::getID() const{return this->plan_id;}
 
 const string Plan::getSelectionPolicy() const{return this->selectionPolicy->toString();}
 
-//add 3 methods that returns the grades of the under construction faciliy scores ask amit about the name
+//under construction facilities scores
+
+const int Plan::getlifeQualityScore_UC() const{
+    int lifeQualityScore_UC = 0;
+    for(Facility* f: underConstruction){
+        lifeQualityScore_UC = lifeQualityScore_UC + f->getLifeQualityScore();
+    }
+    return lifeQualityScore_UC;
+}
+
+const int Plan::getEconomyScore_UC() const{
+    int economyScore_UC = 0;
+    for(Facility* f: underConstruction){
+        economyScore_UC = economyScore_UC + f->getEconomyScore();
+    }
+    return economyScore_UC;
+}
+
+const int Plan::getEnvironmentScore_UC() const{
+    int environmentScore_UC = 0;
+    for(Facility* f: underConstruction){
+        environmentScore_UC = environmentScore_UC + f->getEconomyScore();
+    }
+    return environmentScore_UC;
+}
+
+
