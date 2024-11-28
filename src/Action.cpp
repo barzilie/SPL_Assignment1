@@ -12,6 +12,7 @@ enum class ActionStatus{
 class BaseAction{
     public:
         BaseAction();
+        //HAS TO ADD GET STATUS FOR ALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ActionStatus getStatus() const;
         virtual void act(Simulation& simulation)=0;
         virtual const string toString() const=0;
@@ -28,9 +29,16 @@ class BaseAction{
         ActionStatus status;
 };
 //BaseAction: protected methods
-void BaseAction::complete(){this->status = "COMPLETED"}
-void BaseAction::error(this->errorMsg){this->status = "ERROR";
+void BaseAction::complete(){
+    //add to changelog here
+    this->status = "COMPLETED"
+    }
+//ERROR method may not require a change if error is the default status, may just call for print
+void BaseAction::error(
+    this->errorMsg){this->status = "ERROR";
+    //add to changelog here
     std::cout << errorMsg << std::endl;}
+    //DONT FORGET: create add to changelog method in simulation
 
 //SimulateStep: constructor
 SimulateStep::SimulateStep(const int numOfSteps):errorMsg(""),status("RUNNING"), numOfSteps(numOfSteps){}
@@ -160,18 +168,85 @@ ChangePlanPolicy::clone(){return new ChangePlanPolicy(*this);}
 
 
 class PrintActionsLog : public BaseAction {
-
 };
+//PrintActionsLog: constructor
+PrintActionsLog::PrintActionsLog():errorMsg(""), status(""){}
+
+//PrintActionsLog: copy constructor
+PrintActionsLog::PrintActionsLog(const PrintActionsLog &other):errorMsg(other.errorMsg),status(other.status){}
+
+//PrintActionsLog: methods
+void PrintActionsLog::act(Simulation &simulation){
+    //loop through actions log simulations, print every to string of action. 
+    complete();
+
+}
+PrintActionsLog::toString(){return "Log" << this->status ;}
+
+PrintActionsLog::clone(){return new PrintActionsLog(*this);}
 
 class Close : public BaseAction {
 
 };
+//close: constructor
+Close::Close():errorMsg(""), status(""){}
+
+//Close: copy constructor
+Close::Close(const Close &other):errorMsg(other.errorMsg),status(other.status){}
+
+//Close: methods
+void Close::act(Simulation &simulation){
+    //loops through simulation.plan.printStatus()
+    simulation.close();
+    complete();
+    
+
+}
+Close::toString(){return "close" << this->status ;}
+
+Close::clone(){return new Close(*this);}
 
 class BackupSimulation : public BaseAction {
 
 };
+//backupsimulation: constructor
+BackupSimulation::BackupSimulation():errorMsg(""), status(""){}
+
+//BackupSimulation: copy constructor
+BackupSimulation::BackupSimulation(const BackupSimulation &other):errorMsg(other.errorMsg),status(other.status){}
+
+//BackupSimulation: methods
+void BackupSimulation::act(Simulation &simulation){
+    extern Simulation* backup = Simulation.clone();
+    complete();
+    
+
+}
+BackupSimulation::toString(){return "BackupSimulation" << this->status ;}
+
+BackupSimulation::clone(){return new BackupSimulation(*this);}
 
 
 class RestoreSimulation : public BaseAction {
 
 };
+//restoresimulation: constructor
+//building an assignment operator here for simulation
+RestoreSimulation::RestoreSimulation():errorMsg("No backup available"), status(""){}
+
+//RestoreSimulation: copy constructor
+RestoreSimulation::RestoreSimulation(const RestoreSimulation &other):errorMsg(other.errorMsg),status(other.status){}
+
+//RestoreSimulation: methods
+void RestoreSimulation::act(Simulation &simulation){
+    if(extern Simulation* backup){
+        simulation = *backup;
+        complete();
+    }
+    error();
+    
+
+}
+RestoreSimulation::toString(){return "RestoreSimulation" << this->status ;}
+
+RestoreSimulation::clone(){return new RestoreSimulation(*this);}
