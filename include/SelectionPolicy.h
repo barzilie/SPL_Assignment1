@@ -44,6 +44,7 @@ class BalancedSelection: public SelectionPolicy {
 class EconomySelection: public SelectionPolicy {
     public:
         EconomySelection();
+        EconomySelection(const EconomySelection &ecs); //new copy constructor
         const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
         const string toString() const override;
         EconomySelection *clone() const override;
@@ -56,6 +57,7 @@ class EconomySelection: public SelectionPolicy {
 class SustainabilitySelection: public SelectionPolicy {
     public:
         SustainabilitySelection();
+        SustainabilitySelection(const SustainabilitySelection &ss); //new copy constructor
         const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
         const string toString() const override;
         SustainabilitySelection *clone() const override;

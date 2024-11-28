@@ -44,7 +44,8 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
     diffs.reserve(facilitiesOptions.size());
     int indexOfMin = 0;
     int minDiff = INT_MAX;
-    for(int i = 0; i<facilitiesOptions.size(); i++){
+    int fac_size = static_cast<int>(facilitiesOptions.size()); //casting size to int (otherwise can't compare i to size)
+    for(int i = 0; i<fac_size; i++){
         FacilityType current = facilitiesOptions[i];
         vector<int> scores = {this->EconomyScore + current.getEconomyScore(), this->EnvironmentScore + current.getEnvironmentScore(), this->LifeQualityScore + current.getLifeQualityScore()};
         auto maxi = max_element(scores.begin(), scores.end());
@@ -83,18 +84,19 @@ EconomySelection::EconomySelection(const EconomySelection &ecs):lastSelectedInde
 const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
     bool found = false;
     int index = lastSelectedIndex;
+    //FacilityType& output;
     while(!found){
         if (facilitiesOptions[index].getCategory() == FacilityCategory::ECONOMY){
             found = true;
             int current_index = index;
             lastSelectedIndex = (index+1)%(facilitiesOptions.size()); 
-            FacilityType& output = facilitiesOptions[current_index];
+            return facilitiesOptions[current_index];
         }
         else{
             index = (index+1)%(facilitiesOptions.size());
         }
     }
-    return output;
+    return facilitiesOptions[0];
 }
 
 
@@ -120,18 +122,19 @@ SustainabilitySelection::SustainabilitySelection(const SustainabilitySelection &
 const FacilityType& SustainabilitySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
     bool found = false;
     int index = lastSelectedIndex;
+    //FacilityType& output;
     while(!found){
         if (facilitiesOptions[index].getCategory() == FacilityCategory::ENVIRONMENT){
             found = true;
             int current_index = index;
             lastSelectedIndex = (index+1)%(facilitiesOptions.size()); 
-            FacilityType& output = facilitiesOptions[current_index];
+            return facilitiesOptions[current_index];
         }
         else{
             index = (index+1)%(facilitiesOptions.size());
         }
     }
-    return output;
+    return facilitiesOptions[0];
 
 }
 

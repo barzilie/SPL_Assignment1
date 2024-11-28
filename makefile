@@ -5,9 +5,9 @@
 all: bin/main
 
 #depend on main.o and Settlement.o
-bin/main: clean bin/main.o bin/Settlement.o bin/Facility.o bin/SelectionPolicy.o bin/Plan.o
+bin/main: clean bin/main.o bin/Settlement.o bin/Facility.o bin/SelectionPolicy.o bin/Plan.o bin/Simulation.o
 	@echo 'invoking linker'
-	g++ -o bin/main bin/main.o bin/Settlement.o bin/Facility.o bin/SelectionPolicy.o bin/Plan.o
+	g++ -o bin/main bin/main.o bin/Settlement.o bin/Facility.o bin/SelectionPolicy.o bin/Plan.o bin/Simulation.o
 	@echo 'build completed'
 
 #depend on source
@@ -30,6 +30,10 @@ bin/SelectionPolicy.o:
 bin/Plan.o:
 	
 	g++ -g -Wall -Weffc++ -std=c++11 -c -Iinclude -o bin/Plan.o src/Plan.cpp
+
+bin/Simulation.o:
+	
+	g++ -g -Wall -Weffc++ -std=c++11 -c -Iinclude -o bin/Simulation.o src/Simulation.cpp
 
 #clean
 clean: 
