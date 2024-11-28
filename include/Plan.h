@@ -4,6 +4,7 @@
 #include "Settlement.h"
 #include "SelectionPolicy.h"
 using std::vector;
+using namespace std;
 
 enum class PlanStatus {
     AVALIABLE,
@@ -25,6 +26,12 @@ class Plan {
         const vector<Facility*> &getFacilities() const;
         void addFacility(Facility* facility);
         const string toString() const;
+        const int getID() const;
+        const string getSelectionPolicy() const;
+        //new getters that return the scores of the under construction facilities
+        const int getlifeQualityScore_UC() const;
+        const int getEconomyScore_UC() const;
+        const int getEnvironmentScore_UC() const;
 
     private:
         int plan_id;
