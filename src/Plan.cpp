@@ -77,11 +77,19 @@ void Plan::printStatus(){
 
 }
 
-const vector<Facility*>& Plan::getFacilities() const{return facilities;}
+const vector<Facility*>& Plan::getFacilities() const{
+    return facilities;
+}
 
 void Plan::addFacility(Facility* facility){
     underConstruction.push_back(facility);
-
+    //do we need to increment the score of the balanced selection (if using the balanced selec - 
+    // need to make sure its updated)?
+    // what happens if we want to add 3 facilities in a time in balanced. does it consider the scores    
+    /*
+       if(this->getSelectionPolicy == "bal"){
+        this->s
+    */
 
 }
 

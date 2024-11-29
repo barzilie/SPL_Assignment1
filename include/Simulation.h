@@ -24,7 +24,9 @@ class Simulation {
         bool isPlanExists(const int planId); //added function
         Settlement &getSettlement(const string &settlementName);
         Plan &getPlan(const int planId);
-        bool changePlanPolicy(const int planId, const string &newPolicy);
+        bool changePlanPolicy(const int planId, const string &newPolicy); //added fuction
+        void clearSettlements(); //added fuction
+        void clearActionsLog(); //added fuction
 
         //rule of 3 additions
         Simulation(const Simulation& other);

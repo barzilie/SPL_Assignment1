@@ -116,12 +116,6 @@ bool Simulation::isSettlementExists(const string &settlementName){
         }
     }
     return false;
-    /*
-        bool settExists = any_of(settlements.begin(), settlements.end(), [settlementName](const Settlement& sett){
-        return sett.getName() == settlementName;
-    });
-    */
-
 }
 
 bool Simulation::isFacilityExists(const string &facilityName){
@@ -131,12 +125,6 @@ bool Simulation::isFacilityExists(const string &facilityName){
         }
     }
     return false;
-    /*
-        bool facExists = any_of(facilitiesOptions.begin(), facilitiesOptions.end(), [facilityName](const FacilityType& fac) {
-    return fac.getName() == facilityName;
-    });
-    */
-
 }
 
  bool Simulation::isPlanExists(const int planId){
@@ -146,13 +134,6 @@ bool Simulation::isFacilityExists(const string &facilityName){
         }
     }
     return false;
-
-    /*
-       bool planExists = any_of(plans.begin(), plans.end(), [planId](const Plan& p) {
-    return p.getID() == planId;
-    });
-    */
- 
  }
 
 Settlement& Simulation::getSettlement(const string &settlementName){
@@ -162,14 +143,6 @@ Settlement& Simulation::getSettlement(const string &settlementName){
         }
     }
     return Settlement("invalid", SettlementType::VILLAGE);
-
-    // what can i do here?
-    /*
-        return *std::find_if(settlements.begin(), settlements.end(), [settlementName](const Settlement& sett){
-        return sett.getName() == settlementName
-        });
-    */
-
 }
 
 Plan& Simulation::getPlan(const int planId){
@@ -179,12 +152,6 @@ Plan& Simulation::getPlan(const int planId){
         }
     }
     return p;
-    /*
-        return *std::find_if(plans.begin(), plans.end(), [planId](const Plan& p){
-    return p.getID() == planId
-    });
-    */
-
  }
 
  bool Simulation::changePlanPolicy(const int planId, const string &newPolicy){
@@ -217,28 +184,23 @@ Plan& Simulation::getPlan(const int planId){
         this->getPlan(planId).setSelectionPolicy(new SustainabilitySelection());
     }
 
-/*
-
-    switch(newPolicy){
-        Plan p = Plan(getPlan(planId));
-        case "bal":
-            int LifeQualityScore = p.getlifeQualityScore() + p.getlifeQualityScore_UC();
-            int EconomyScore = p.getEconomyScore() + p.getEconomyScore_UC();
-            int EnvironmentScore = p.getEnvironmentScore() + p.getEnvironmentScore_UC();
-            this->getPlan(planId).setSelectionPolicy(new BalancedSelection(LifeQualityScore, EconomyScore, EnvironmentScore));
-        case "eco":
-            this->getPlan(planId).setSelectionPolicy(new EconomySelection());
-        case "nve":
-            this->getPlan(planId).setSelectionPolicy(new NaiveSelection());
-        case "env":
-            this->getPlan(planId).setSelectionPolicy(new SustainabilitySelection());
-    }
-
-*/
-
-
-
  }
+
+void clearSettlements(){
+    int list_size = static_cast<int>(this->settlements.size()); //casting size to int (otherwise can't compare i to size)
+    for(int i = 0; i<list_size; i++){
+        delete settlements.at(i);
+    }
+    this->settlements.clear();
+}
+
+void clearActionsLog(){
+    int list_size = static_cast<int>(this->actionsLog.size()); //casting size to int (otherwise can't compare i to size)
+    for(int i = 0; i<list_size; i++){
+        delete actionsLog.at(i);
+    }
+    this->actionsLog.clear();
+}
 
 
 //rule of 3 additions
@@ -246,12 +208,8 @@ Plan& Simulation::getPlan(const int planId){
  Simulation& operator=(const Simulation& other);
 
  Simulation:: ~Simulation (){
-    for(BaseAction* ba: actionsLog){
-        delete ba;
-    }
-    for(Settlement* s: settlements){
-        delete s;
-    }
+    clearSettlements();
+    clearActionsLog();
  }
 
 
@@ -276,5 +234,7 @@ void Simulation::close(){
 void Simulation::open(){
 
 }
+
+
 
 
