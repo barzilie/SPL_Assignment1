@@ -36,26 +36,26 @@ Simulation::Simulation(const string &configFilePath):isRunning(false), planCount
                 }
                 //# facility <facility_name> <category> <price> <lifeq_impact> <eco_impact> <env_impact>
                 if(args[0] == "facility"){
-                    //change according to cast - 2 next lines 
-                    facilitiesOptions.push_back(FacilityType(args[1], static_cast<FacilityCategory>(stoi(args[2])),stoi(args[3]), stoi(args[4]), stoi(args[5]), stoi(args[6])));
+                    FacilityType ft = FacilityType(args[1], static_cast<FacilityCategory>(stoi(args[2])),stoi(args[3]), stoi(args[4]), stoi(args[5]), stoi(args[6]));
+                    facilitiesOptions.push_back(ft);
                 }
                 //# plan <settlement_name> <selection_policy>
                 if(args[0] == "plan"){
                         if(args[2] == "bal"){
-                            //required to create get settlement that returns refernce to args[1]!!!!!!!!!!!!!!!!!!!!!!
-                            plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new BalancedSelection(0,0,0), facilitiesOptions));
+                            plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new BalancedSelection(0,0,0), this->facilitiesOptions));
                         }
-                        if(args[2] == "eco"){
-                            plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new EconomySelection(), facilitiesOptions));
+                        else if(args[2] == "eco"){
+                            plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new EconomySelection(), this->facilitiesOptions));
                         }
-                        if(args[2] == "eco"){
-                            plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new NaiveSelection(), facilitiesOptions));
+                        else if(args[2] == "nve"){
+                            plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new NaiveSelection(), this->facilitiesOptions));
                         }
-                        if(args[2] == "eco"){
-                            plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new SustainabilitySelection(), facilitiesOptions));
-                        }     
+                        else if(args[2] == "env"){
+                            plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new SustainabilitySelection(), this->facilitiesOptions));
+                        }  
+                        this->planCounter++;   
                     }
-                this->planCounter++;
+                
                 }
         } 
 }

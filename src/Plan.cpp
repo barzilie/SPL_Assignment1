@@ -11,11 +11,12 @@ using namespace std;
 
 //Plan: constructor
 Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions):
-plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), status(PlanStatus::AVALIABLE), facilities{}, underConstruction{}, facilityOptions{}, life_quality_score(0), economy_score(0), environment_score(0) {
+plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), status(PlanStatus::AVALIABLE), facilities{}, underConstruction{}, facilityOptions(facilityOptions), life_quality_score(0), economy_score(0), environment_score(0) {
 }
 
 //Plan: copy constructor
-Plan::Plan(const Plan& other):plan_id(other.plan_id), settlement(other.settlement), selectionPolicy(other.selectionPolicy), status(other.status), facilities{}, underConstruction{}, facilityOptions(other.facilityOptions), life_quality_score(other.life_quality_score), economy_score(other.economy_score), environment_score(other.environment_score) {
+Plan::Plan(const Plan& other):plan_id(other.plan_id), settlement(other.settlement), status(other.status), facilities{}, underConstruction{}, facilityOptions(other.facilityOptions), life_quality_score(other.life_quality_score), economy_score(other.economy_score), environment_score(other.environment_score) {
+    selectionPolicy = other.selectionPolicy->clone();
     int facilities_size = static_cast<int>(other.facilities.size()); //casting size to int (otherwise can't compare i to size)
     int underConstruction_size = static_cast<int>(other.underConstruction.size()); //casting size to int (otherwise can't compare i to size)
     for(int i=0; i<facilities_size; i++){
@@ -83,9 +84,9 @@ void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy){this->selectionP
 void Plan::step(){
     if(this->status == PlanStatus::AVALIABLE){
         int availabeSpots = static_cast<int>(this->settlement.getType()) + 1 - this->underConstruction.size();
-        while(availabeSpots>0){
+        while(availabeSpots > 0){
             FacilityType nextType = this->selectionPolicy->selectFacility(this->facilityOptions);
-            Facility* f = new Facility(nextType, nextType.getName());
+            Facility* f = new Facility(nextType, settlement.getName());
             this->addFacility(f);
             availabeSpots--;
         }
@@ -149,7 +150,7 @@ void Plan::addFacility(Facility* facility){
     }
 }
 
-const string Plan::toString() const{return "PlanID:" + this->plan_id;}
+const string Plan::toString() const{return "PlanID:" + to_string(this->plan_id);}
 
 const int Plan::getID() const{return this->plan_id;}
 

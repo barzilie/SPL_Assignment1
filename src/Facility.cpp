@@ -42,7 +42,6 @@ const int Facility::getTimeLeft() const{return timeLeft;}
 FacilityStatus Facility::step(){
     timeLeft = getTimeLeft()-1;
     if (timeLeft == 0){setStatus(FacilityStatus::OPERATIONAL);}
-    //DONT FORGET ADD TO FACILITES LIST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     return getStatus();
 }
 
