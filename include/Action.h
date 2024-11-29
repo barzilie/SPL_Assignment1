@@ -4,6 +4,7 @@
 #include "Simulation.h"
 enum class SettlementType;
 enum class FacilityCategory;
+extern Simulation* backup;
 
 enum class ActionStatus{
     COMPLETED, ERROR
@@ -100,6 +101,8 @@ class ChangePlanPolicy : public BaseAction {
     private:
         const int planId;
         const string newPolicy;
+        const string prevPolicy;
+
 };
 
 
