@@ -29,6 +29,7 @@ class Plan {
         const string toString() const;
         const int getID() const;
         const string getSelectionPolicy() const;
+        const string getSelectionPolicyFN() const;
         //new getters that return the scores of the under construction facilities
         const int getlifeQualityScore_UC() const;
         const int getEconomyScore_UC() const;

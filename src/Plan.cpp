@@ -155,6 +155,11 @@ const int Plan::getID() const{return this->plan_id;}
 
 const string Plan::getSelectionPolicy() const{return this->selectionPolicy->toString();}
 
+const string Plan::getSelectionPolicyFN() const
+{
+    return this->selectionPolicy->toStringFullName();
+}
+
 //under construction facilities scores
 
 const int Plan::getlifeQualityScore_UC() const{

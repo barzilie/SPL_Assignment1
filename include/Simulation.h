@@ -28,6 +28,7 @@ class Simulation {
         bool changePlanPolicy(const int planId, const string &newPolicy); //added fuction
         void clearSettlements(); //added fuction
         void clearActionsLog(); //added fuction
+        void printActionsLog() const; //added function
         Simulation* clone() const; //added function
 
         //rule of 3 additions

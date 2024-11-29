@@ -251,6 +251,13 @@ void Simulation::clearActionsLog(){
     this->actionsLog.clear();
 }
 
+void Simulation::printActionsLog() const{
+    int log_size = this->actionsLog.size();
+    for (int i = 0; i < log_size; i++){
+        cout << this->actionsLog.at(i)->toString() << endl;
+    }
+}
+
 Simulation *Simulation::clone() const{
     return new Simulation(*this);
 }
@@ -277,7 +284,7 @@ Simulation& Simulation::operator=(const Simulation& other){
         facilitiesOptions.clear();
         clearSettlements();
         clearActionsLog();
-        
+
         int plans_size = static_cast<int>(other.plans.size()); //casting size to int (otherwise can't compare i to size)
         for(int i=0; i<plans_size; i++){
             plans.push_back(Plan(other.plans.at(i)));
