@@ -4,6 +4,7 @@
 #include "Simulation.h"
 enum class SettlementType;
 enum class FacilityCategory;
+extern Simulation* backup;
 
 enum class ActionStatus{
     COMPLETED, ERROR
@@ -12,7 +13,6 @@ enum class ActionStatus{
 class BaseAction{
     public:
         BaseAction();
-        //HAS TO ADD GET STATUS FOR ALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ActionStatus getStatus() const;
         virtual void act(Simulation& simulation)=0;
         virtual const string toString() const=0;
@@ -29,19 +29,22 @@ class BaseAction{
         ActionStatus status;
 };
 //BaseAction: protected methods
+ActionStatus BaseAction::getStatus() const{
+    return this->status
+}
+//BaseAction: protected methods
 void BaseAction::complete(){
+    this->status = ActionStatus::COMPLETED;
     //add to changelog here
-    this->status = "COMPLETED"
     }
-//ERROR method may not require a change if error is the default status, may just call for print
 void BaseAction::error(
-    this->errorMsg){this->status = "ERROR";
+    this->errorMsg){
     //add to changelog here
     std::cout << errorMsg << std::endl;}
     //DONT FORGET: create add to changelog method in simulation
 
 //SimulateStep: constructor
-SimulateStep::SimulateStep(const int numOfSteps):errorMsg(""),status("RUNNING"), numOfSteps(numOfSteps){}
+SimulateStep::SimulateStep(const int numOfSteps):errorMsg(""),status(ACTIONSTATUS::ERROR), numOfSteps(numOfSteps){}
 
 //SimulateStep: copy constructor
 SimulateStep::SimulateStep(const SimulateStep &other):errorMsg(other.errorMsg),status(other.status), numOfSteps(other.numOfSteps){}
@@ -60,7 +63,7 @@ const string SimulateStep::toString() const {return "step " << this->numOfSteps 
  SimulateStep* SimulateStep::clone() const {return new SimulateStep(*this);}
 
 //AddPlan: constructor
-AddPlan::AddPlan(const string &settlementName, const string &selectionPolicy):errorMsg("Cannot create this plan"), status("RUNNING"), settlementName(settlementName), selectionPolicy(selectionPolicy){}
+AddPlan::AddPlan(const string &settlementName, const string &selectionPolicy):errorMsg("Cannot create this plan"), status(ACTIONSTATUS::ERROR), settlementName(settlementName), selectionPolicy(selectionPolicy){}
 
 //AddPlan: copy constructor
 AddPlan::AddPlan(const AddPlan &other):errorMsg(other.errorMsg),status(other.status), settlementName(other.settlementName), selectionPolicy(other.selectionPolicy){}
@@ -68,19 +71,21 @@ AddPlan::AddPlan(const AddPlan &other):errorMsg(other.errorMsg),status(other.sta
 //AddPlan: methods
 void AddPlan::act(Simulation &simulation){
     if (!Simulation.isSettlementExists(this->settlementName)){error();}
-    switch(this->selectionPolicy){
-        case "bal":
-            simulation.addPlan(Simulation.getSettlement(this->settlementName),new BalancedSelection());
-        case "eco":
-            simulation.addPlan(Simulation.getSettlement(this->settlementName),new EconomySelection());
-        case "nve":
-            simulation.addPlan(Simulation.getSettlement(this->settlementName),new NaiveSelection());
-        case "env":
-            simulation.addPlan(Simulation.getSettlement(this->settlementName),new SustainabilitySelection());
-        default:
-            error();
-    }
-    complete();
+    if(this->selectionpolicy == "bal"){
+        simulation.addPlan(Simulation.getSettlement(this->settlementName),new BalancedSelection());complete();
+    }
+    if(this->selectionpolicy == "eco"){
+        simulation.addPlan(Simulation.getSettlement(this->settlementName),new EconomySelection());complete();
+    }
+    if(this->selectionpolicy == "eco"){
+        simulation.addPlan(Simulation.getSettlement(this->settlementName),new NaiveSelection());complete();
+    }
+    if(this->selectionpolicy == "eco"){
+        simulation.addPlan(Simulation.getSettlement(this->settlementName),new SustainabilitySelection());complete();
+    }
+    else{
+        error();
+    }
 }
 
 AddPlan::toString(){return "Plan " << this->settlementName << this->selectionPolicy << this->status;}
@@ -93,7 +98,7 @@ class AddSettlement : public BaseAction {
         const SettlementType settlementType;
 };
 //AddSettlement: constructor
-Addsettlement::Addsettlement(const string &settlementName,SettlementType settlementType):errorMsg("Settlement already exists"),status("RUNNING"), settlementName(settlementName),settlementType(settlementType){}
+Addsettlement::Addsettlement(const string &settlementName,SettlementType settlementType):errorMsg("Settlement already exists"),status(ACTIONSTATUS::ERROR), settlementName(settlementName),settlementType(settlementType){}
 
 //AddSettlement: copy constructor
 AddSettlement::AddSettlement(const AddSettlement &other):errorMsg(other.errorMsg),status(other.status), settlementName(other.settlementName),settlementType(other.settlementType){}
@@ -121,7 +126,7 @@ class AddFacility : public BaseAction {
 };
 //AddFacility: constructor
 AddFacility::AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore):
-(errorMsg("Facility already exists"),status("RUNNING"), facilityName(facilityName), facilityCategory(facilityCategory), price(price), lifeQualityScore(lifeQualityScore), economyScore(economyScore), environmentScore(environmentScore)){}
+(errorMsg("Facility already exists"),status(ACTIONSTATUS::ERROR), facilityName(facilityName), facilityCategory(facilityCategory), price(price), lifeQualityScore(lifeQualityScore), economyScore(economyScore), environmentScore(environmentScore)){}
 
 //AddFacility: copy constructor
 AddFacility::AddFacility(const AddFacility &other):errorMsg(other.errorMsg),status(other.status), facilityName(other.facilityName), facilityCategory(other.facilityCategory), price(other.price), lifeQualityScore(other.lifeQualityScore), economyScore(other.economyScore), environmentScore(other.environmentScore){}
@@ -144,11 +149,11 @@ class PrintPlanStatus: public BaseAction {
 class ChangePlanPolicy : public BaseAction {
         const int planId;
         const string newPolicy;
-        const string prevPolicy;
+        //CONSIDER ADDING: const string prevPolicy;
 };
 
 //ChangePlanPolicy: constructor
-ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy):errorMsg("Cannot change selection policy"), status("RUNNING"), planId(planId), newPolicy(newPolicy), prevPolicy(""){}
+ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy):errorMsg("Cannot change selection policy"), status(ACTIONSTATUS::ERROR), planId(planId), newPolicy(newPolicy), prevPolicy(""){}
 
 //ChangePlanPolicy: copy constructor
 ChangePlanPolicy::ChangePlanPolicy(const ChangePlanPolicy &other):errorMsg(other.errorMsg),status(other.status), planId(other.planId), newPolicy(other.newPolicy), prevPolicy(other.prevPolicy){}
@@ -170,7 +175,7 @@ ChangePlanPolicy::clone(){return new ChangePlanPolicy(*this);}
 class PrintActionsLog : public BaseAction {
 };
 //PrintActionsLog: constructor
-PrintActionsLog::PrintActionsLog():errorMsg(""), status(""){}
+PrintActionsLog::PrintActionsLog():errorMsg(""), status(ACTIONSTATUS::ERROR){}
 
 //PrintActionsLog: copy constructor
 PrintActionsLog::PrintActionsLog(const PrintActionsLog &other):errorMsg(other.errorMsg),status(other.status){}
@@ -189,7 +194,7 @@ class Close : public BaseAction {
 
 };
 //close: constructor
-Close::Close():errorMsg(""), status(""){}
+Close::Close():errorMsg(""), status(ACTIONSTATUS::ERROR){}
 
 //Close: copy constructor
 Close::Close(const Close &other):errorMsg(other.errorMsg),status(other.status){}
@@ -210,14 +215,14 @@ class BackupSimulation : public BaseAction {
 
 };
 //backupsimulation: constructor
-BackupSimulation::BackupSimulation():errorMsg(""), status(""){}
+BackupSimulation::BackupSimulation():errorMsg(""), status(ACTIONSTATUS::ERROR){}
 
 //BackupSimulation: copy constructor
 BackupSimulation::BackupSimulation(const BackupSimulation &other):errorMsg(other.errorMsg),status(other.status){}
 
 //BackupSimulation: methods
 void BackupSimulation::act(Simulation &simulation){
-    extern Simulation* backup = Simulation.clone();
+    backup = Simulation.clone();
     complete();
     
 
@@ -232,14 +237,14 @@ class RestoreSimulation : public BaseAction {
 };
 //restoresimulation: constructor
 //building an assignment operator here for simulation
-RestoreSimulation::RestoreSimulation():errorMsg("No backup available"), status(""){}
+RestoreSimulation::RestoreSimulation():errorMsg("No backup available"), status(ACTIONSTATUS::ERROR){}
 
 //RestoreSimulation: copy constructor
 RestoreSimulation::RestoreSimulation(const RestoreSimulation &other):errorMsg(other.errorMsg),status(other.status){}
 
 //RestoreSimulation: methods
 void RestoreSimulation::act(Simulation &simulation){
-    if(extern Simulation* backup){
+    if(backup){
         simulation = *backup;
         complete();
     }
