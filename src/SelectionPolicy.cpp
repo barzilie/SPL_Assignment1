@@ -24,10 +24,15 @@ const FacilityType& NaiveSelection::selectFacility(const vector<FacilityType>& f
 
 const string NaiveSelection::toString() const {return "nve";}
 
+const string NaiveSelection::toStringFullName() const {
+    return "Naive";
+}
+
 
 NaiveSelection* NaiveSelection::clone() const {
     return new NaiveSelection(*this);
 }
+void NaiveSelection::incrementScores(int LQ, int EC, int EN) {} //for resolving virtual function - NOT IN USE
 
 
 
@@ -63,14 +68,21 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
 
 
 const string BalancedSelection::toString() const {return "bal";}
+
+const string BalancedSelection::toStringFullName() const {
+    return "Balanced";
+}
     
 
 BalancedSelection* BalancedSelection::clone() const {
     return new BalancedSelection(*this);
 }
 
-
-
+ void BalancedSelection::incrementScores(int LQ, int EC, int EN){
+    this->LifeQualityScore += LQ;
+    this->EconomyScore += EC;
+    this->EnvironmentScore += EN;
+}
 
 
 //************* EconomySelection implementation: ************* 
@@ -101,11 +113,17 @@ const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>&
 
 
 const string EconomySelection::toString() const {return "eco";}
+
+const string EconomySelection::toStringFullName() const {
+    return "Economy";
+}
     
 
 EconomySelection* EconomySelection::clone() const {
     return new EconomySelection(*this);
 }
+
+void EconomySelection::incrementScores(int LQ, int EC, int EN) {} //for resolving virtual function - NOT IN USE
 
 
 
@@ -140,8 +158,14 @@ const FacilityType& SustainabilitySelection::selectFacility(const vector<Facilit
 
 
 const string SustainabilitySelection::toString() const {return "env";}
+
+const string SustainabilitySelection::toStringFullName() const {
+    return "Sustainability";
+}
     
 
 SustainabilitySelection* SustainabilitySelection::clone() const {
     return new SustainabilitySelection(*this);
 }
+
+void SustainabilitySelection::incrementScores(int LQ, int EC, int EN) {} //for resolving virtual function - NOT IN USE

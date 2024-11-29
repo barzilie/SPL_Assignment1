@@ -13,6 +13,8 @@ enum class ActionStatus{
 class BaseAction{
     public:
         BaseAction();
+        BaseAction(const string msg);
+        BaseAction(const BaseAction &ba);
         ActionStatus getStatus() const;
         virtual void act(Simulation& simulation)=0;
         virtual const string toString() const=0;
@@ -29,7 +31,7 @@ class BaseAction{
         ActionStatus status;
 };
 
-class SimulateStep : public BaseAction {
+class SimulateStep: public BaseAction {
 
     public:
         SimulateStep(const int numOfSteps);

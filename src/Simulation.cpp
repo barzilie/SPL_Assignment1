@@ -10,6 +10,7 @@
 #include "Facility.h"
 #include "Plan.h"
 #include "Settlement.h"
+#include "Action.h"
 using std::string;
 using std::vector;
 using namespace std;
@@ -24,22 +25,19 @@ Simulation::Simulation(const string &configFilePath):isRunning(false), planCount
         // return 1; //the compiler didnt like returning ftom constructor
     }
     //necessery?^
-    std::string line;
-    while (std::getline(file, line)) {
+    string line;
+    while(getline(file, line)) {
         if(line[0]!='#'){
             vector<string> args = Auxiliary::parseArguments(line);
                 //# settlement <settlement_name> <settlement_type> 
                 if(args[0] == "settlement"){
-                    //change according to cast - 2 next lines 
-                    const std::array<SettlementType, 3> types = {SettlementType::VILLAGE, SettlementType::CITY, SettlementType::METROPOLIS};
-                    settlements.push_back(new Settlement(args[1],types[stoi(args[2])]));
+                    settlements.push_back(new Settlement(args[1],static_cast<SettlementType>(stoi(args[2]))));
 
                 }
                 //# facility <facility_name> <category> <price> <lifeq_impact> <eco_impact> <env_impact>
                 if(args[0] == "facility"){
                     //change according to cast - 2 next lines 
-                    const std::array<FacilityCategory, 3> category = {FacilityCategory::LIFE_QUALITY, FacilityCategory::ECONOMY, FacilityCategory::ENVIRONMENT};
-                    facilitiesOptions.push_back(FacilityType(args[1], category[stoi(args[2])],stoi(args[3]), stoi(args[4]), stoi(args[5]), stoi(args[6])));
+                    facilitiesOptions.push_back(FacilityType(args[1], static_cast<FacilityCategory>(stoi(args[2])),stoi(args[3]), stoi(args[4]), stoi(args[5]), stoi(args[6])));
                 }
                 //# plan <settlement_name> <selection_policy>
                 if(args[0] == "plan"){
@@ -65,17 +63,64 @@ Simulation::Simulation(const string &configFilePath):isRunning(false), planCount
 
 
 void Simulation::start(){
-    this->isRunning = true;
+    open();
     cout << "The simulation has started" << endl;
     while(isRunning){
-    //string userInput;
-   // getline(cin, userInput);
+        string userInput;
+        getline(cin, userInput);
+        vector<string> args = Auxiliary::parseArguments(userInput);
+        if(args[0] == "step"){
+            SimulateStep s = SimulateStep(stoi(args[1]));
+            s.act(*this);
+            addAction(s.clone());
+        }
 
+        else if(args[0] == "plan"){
+            AddPlan s = AddPlan(args[1], args[2]);
+            s.act(*this);
+            addAction(s.clone());
+        }
+        else if(args[0] == "settlement"){
+            AddSettlement s = AddSettlement(args[1], static_cast<SettlementType>(stoi(args[2])));
+            s.act(*this);
+            addAction(s.clone());
+        }
+        else if(args[0] == "facility"){
+            AddFacility s = AddFacility(args[1], static_cast<FacilityCategory>(stoi(args[2])), stoi(args[3]), stoi(args[4]), stoi(args[5]), stoi(args[6]));
+            s.act(*this);
+            addAction(s.clone());
+        }
+        else if(args[0] == "planStatus"){
+            PrintPlanStatus s = PrintPlanStatus(stoi(args[1]));
+            s.act(*this);
+            addAction(s.clone());
+        }
+        else if(args[0] == "changePolicy"){
+            ChangePlanPolicy s = ChangePlanPolicy(stoi(args[1]), args[2]);
+            s.act(*this);
+            addAction(s.clone());
+        }
+        else if(args[0] == "log"){
+            PrintActionsLog s = PrintActionsLog();
+            s.act(*this);
+            addAction(s.clone());
+        }
+        else if(args[0] == "close"){
+            Close s = Close();
+            s.act(*this);
+            addAction(s.clone());
+        }
+        else if(args[0] == "backup"){
+            BackupSimulation s = BackupSimulation();
+            s.act(*this);
+            addAction(s.clone());
+        }
+        else if(args[0] == "restore"){
+            RestoreSimulation s = RestoreSimulation();
+            s.act(*this);
+            addAction(s.clone());
+        }
     }
-    //wait to input from user (action to execute)?  
-    //string userInput;
-   // getline(cin, userInput);
-
 }
 
 void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy){
@@ -85,18 +130,16 @@ void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectio
 }
 
 void Simulation::addAction(BaseAction *action){
-    //after implementing action class
-    
+    actionsLog.push_back(action);
 }
 
 bool Simulation::addSettlement(Settlement *settlement){
-
-    //if settlement is already in settlements vector: returns false, otherwise add it to settlements and return true
+    //if settlement is already in settlements vector: function returns false, otherwise add it to settlements and return true
     bool exists = isSettlementExists(settlement->getName());
     if (!exists){
         settlements.push_back(settlement);
     }
-    return exists;
+    return !exists; //if already exist, we will not add the sett and return false
     
 }
 
@@ -107,7 +150,7 @@ bool Simulation::addFacility(FacilityType facility){
     if(!exists){
         facilitiesOptions.push_back(facility);
     }
-    return exists;
+    return !exists; //if already exist, we will not add the fac and return false
 
 }
 
@@ -130,8 +173,9 @@ bool Simulation::isFacilityExists(const string &facilityName){
 }
 
  bool Simulation::isPlanExists(const int planId){
-    for(Plan p: plans){
-        if(p.getID() == planId){
+    int list_size = static_cast<int>(plans.size()); //casting size to int (otherwise can't compare i to size)
+    for(int i = 0; i<list_size; i++){
+        if(plans.at(i).getID() == planId){
             return true;
         }
     }
@@ -147,13 +191,6 @@ Settlement& Simulation::getSettlement(const string &settlementName){
     }
     Settlement* s = nullptr;
     return *s;
-    // what can i do here?
-    /*
-        return *std::find_if(settlements.begin(), settlements.end(), [settlementName](const Settlement& sett){
-        return sett.getName() == settlementName
-        });
-    */
-
 }
 
 Plan& Simulation::getPlan(const int planId){
@@ -164,18 +201,10 @@ Plan& Simulation::getPlan(const int planId){
     }
     Plan* p = nullptr;
     return *p;
-    /*
-        return *std::find_if(plans.begin(), plans.end(), [planId](const Plan& p){
-    return p.getID() == planId
-    });
-    */
-
  }
 
  bool Simulation::changePlanPolicy(const int planId, const string &newPolicy){
-    if (!isPlanExists(planId)){
-        return false;
-    }
+
     if(newPolicy != "nve" && newPolicy != "bal" && newPolicy != "eco" && newPolicy != "env"){
         return false;
     }
@@ -202,17 +231,19 @@ Plan& Simulation::getPlan(const int planId){
         this->getPlan(planId).setSelectionPolicy(new SustainabilitySelection());
     }
 
+    return true;
+
  }
 
-void clearSettlements(){
-    int list_size = static_cast<int>(this->settlements.size()); //casting size to int (otherwise can't compare i to size)
+void Simulation::clearSettlements(){
+    int list_size = static_cast<int>(settlements.size()); //casting size to int (otherwise can't compare i to size)
     for(int i = 0; i<list_size; i++){
         delete settlements.at(i);
     }
-    this->settlements.clear();
+    settlements.clear();
 }
 
-void clearActionsLog(){
+void Simulation::clearActionsLog(){
     int list_size = static_cast<int>(this->actionsLog.size()); //casting size to int (otherwise can't compare i to size)
     for(int i = 0; i<list_size; i++){
         delete actionsLog.at(i);
@@ -220,20 +251,67 @@ void clearActionsLog(){
     this->actionsLog.clear();
 }
 
+Simulation *Simulation::clone() const{
+    return new Simulation(*this);
+}
 
 //rule of 3 additions
- Simulation(const Simulation& other);
- Simulation& operator=(const Simulation& other);
 
- Simulation:: ~Simulation (){
+ Simulation::Simulation(const Simulation& other): isRunning(other.isRunning), planCounter(other.planCounter), actionsLog{}, plans(other.plans), settlements{}, facilitiesOptions(other.facilitiesOptions){
+    int actions_size = static_cast<int>(other.actionsLog.size()); //casting size to int (otherwise can't compare i to size)
+    int settlements_size = static_cast<int>(other.settlements.size()); //casting size to int (otherwise can't compare i to size)
+    for(int i=0; i<actions_size; i++){
+        actionsLog.push_back(other.actionsLog.at(i)->clone());
+    }
+    for(int i=0; i<settlements_size; i++){
+        //maybe crete clone instead of making "new" statement
+        settlements.push_back(new Settlement(*(other.settlements.at(i))));
+    }
+
+}
+Simulation& Simulation::operator=(const Simulation& other){
+    if(&other != this){
+        isRunning = other.isRunning;
+        planCounter = other.planCounter;
+        plans.clear();
+        facilitiesOptions.clear();
+        clearSettlements();
+        clearActionsLog();
+        
+        int plans_size = static_cast<int>(other.plans.size()); //casting size to int (otherwise can't compare i to size)
+        for(int i=0; i<plans_size; i++){
+            plans.push_back(Plan(other.plans.at(i)));
+        }
+
+        int facilities_size = static_cast<int>(other.facilitiesOptions.size()); //casting size to int (otherwise can't compare i to size)
+        for(int i=0; i<facilities_size; i++){
+            facilitiesOptions.push_back(FacilityType(other.facilitiesOptions.at(i)));
+        }
+
+        int actions_size = static_cast<int>(other.actionsLog.size()); //casting size to int (otherwise can't compare i to size)
+        for(int i=0; i<actions_size; i++){
+            actionsLog.push_back(other.actionsLog.at(i)->clone());
+        }
+
+        int settlements_size = static_cast<int>(other.settlements.size()); //casting size to int (otherwise can't compare i to size)
+        for(int i=0; i<settlements_size; i++){
+            //maybe crete clone instead of making "new" statement
+            settlements.push_back(new Settlement(*(other.settlements.at(i))));
+        }   
+    }
+    return *this;
+}
+
+Simulation:: ~Simulation (){
     clearSettlements();
     clearActionsLog();
- }
-
+}
 
 //rule of 5 additions
+/*
 Simulation(Simulation&& other);
 Simulation& operator=(Simulation&& other);
+*/
 
 
 void Simulation::step(){
@@ -244,13 +322,13 @@ void Simulation::step(){
 
 void Simulation::close(){
     for(Plan p: plans){
-        p.printStatus();
+        p.printForClose();
     }
-    isRunning = false;
+    this->isRunning = false;
 }
 
 void Simulation::open(){
-
+    this->isRunning = true;
 }
 
 

@@ -2,49 +2,40 @@
 #include <string>
 #include <vector>
 #include "Simulation.h"
+#include "Action.h"
+#include <iostream>
+using namespace std;
 enum class SettlementType;
 enum class FacilityCategory;
 extern Simulation* backup;
 
-enum class ActionStatus{
-    COMPLETED, ERROR
-};
+//******************* BaseAction *******************
 
-class BaseAction{
-    public:
-        BaseAction();
-        ActionStatus getStatus() const;
-        virtual void act(Simulation& simulation)=0;
-        virtual const string toString() const=0;
-        virtual BaseAction* clone() const = 0;
-        virtual ~BaseAction() = default;
+BaseAction::BaseAction():errorMsg(""), status(ActionStatus::ERROR){}
 
-    protected:
-        void complete();
-        void error(string errorMsg);
-        const string &getErrorMsg() const;
+BaseAction::BaseAction(const string msg):errorMsg(msg), status(ActionStatus::ERROR){}
 
-    private:
-        string errorMsg;
-        ActionStatus status;
-};
-//BaseAction: protected methods
-ActionStatus BaseAction::getStatus() const{
-    return this->status
+BaseAction::BaseAction(const BaseAction &other): errorMsg(other.errorMsg), status(other.status){}
+{
 }
-//BaseAction: protected methods
+
+ActionStatus BaseAction::getStatus() const{
+    return this->status;
+}
+
 void BaseAction::complete(){
     this->status = ActionStatus::COMPLETED;
-    //add to changelog here
-    }
-void BaseAction::error(
-    this->errorMsg){
-    //add to changelog here
-    std::cout << errorMsg << std::endl;}
-    //DONT FORGET: create add to changelog method in simulation
+}
+
+void BaseAction::error(string errorMsg){
+    cout << errorMsg << endl;}
+
+const string& BaseAction::getErrorMsg() const{return this->errorMsg;}
+
+//******************* SimulateStep *******************
 
 //SimulateStep: constructor
-SimulateStep::SimulateStep(const int numOfSteps):errorMsg(""),status(ACTIONSTATUS::ERROR), numOfSteps(numOfSteps){}
+SimulateStep::SimulateStep(const int numOfSteps):BaseAction(), numOfSteps(numOfSteps){}
 
 //SimulateStep: copy constructor
 SimulateStep::SimulateStep(const SimulateStep &other):errorMsg(other.errorMsg),status(other.status), numOfSteps(other.numOfSteps){}
@@ -55,58 +46,67 @@ void SimulateStep::act(Simulation &simulation) {
         simulation->step();
         this->numOfSteps--;
     }  
-    this->complete(); 
+    complete(); 
 }
 
 const string SimulateStep::toString() const {return "step " << this->numOfSteps << " " << this->status;}
 
  SimulateStep* SimulateStep::clone() const {return new SimulateStep(*this);}
 
+//******************* AddPlan *******************
+
+
 //AddPlan: constructor
-AddPlan::AddPlan(const string &settlementName, const string &selectionPolicy):errorMsg("Cannot create this plan"), status(ACTIONSTATUS::ERROR), settlementName(settlementName), selectionPolicy(selectionPolicy){}
+AddPlan::AddPlan(const string &settlementName, const string &selectionPolicy):errorMsg("Cannot create this plan"), status(ActionStatus::ERROR), settlementName(settlementName), selectionPolicy(selectionPolicy){}
 
 //AddPlan: copy constructor
 AddPlan::AddPlan(const AddPlan &other):errorMsg(other.errorMsg),status(other.status), settlementName(other.settlementName), selectionPolicy(other.selectionPolicy){}
 
 //AddPlan: methods
 void AddPlan::act(Simulation &simulation){
-    if (!Simulation.isSettlementExists(this->settlementName)){error();}
-    if(this->selectionpolicy == "bal"){
-        simulation.addPlan(Simulation.getSettlement(this->settlementName),new BalancedSelection());complete();
+    if (!Simulation.isSettlementExists(this->settlementName)){
+        error(this->errorMsg);
     }
-    if(this->selectionpolicy == "eco"){
-        simulation.addPlan(Simulation.getSettlement(this->settlementName),new EconomySelection());complete();
+    else if(this->selectionpolicy == "bal"){
+        simulation.addPlan(Simulation.getSettlement(this->settlementName),new BalancedSelection(0,0,0));
+        complete();
     }
-    if(this->selectionpolicy == "eco"){
-        simulation.addPlan(Simulation.getSettlement(this->settlementName),new NaiveSelection());complete();
+    else if(this->selectionpolicy == "eco"){
+        simulation.addPlan(Simulation.getSettlement(this->settlementName),new EconomySelection());
+        complete();
     }
-    if(this->selectionpolicy == "eco"){
-        simulation.addPlan(Simulation.getSettlement(this->settlementName),new SustainabilitySelection());complete();
+    else if(this->selectionpolicy == "nve"){
+        simulation.addPlan(Simulation.getSettlement(this->settlementName),new NaiveSelection());
+        complete();
+    }
+    else if(this->selectionpolicy == "env"){
+        simulation.addPlan(Simulation.getSettlement(this->settlementName),new SustainabilitySelection());
+        complete();
     }
     else{
-        error();
+        error(this->errorMsg);
     }
 }
 
-AddPlan::toString(){return "Plan " << this->settlementName << this->selectionPolicy << this->status;}
+AddPlan::toString(){return "Plan " << this->settlementName << " " << this->selectionPolicy << " " << this->status;}
 
 AddPlan::clone(){return new AddPlan(*this);}
 
 
-class AddSettlement : public BaseAction {
-        const string settlementName;
-        const SettlementType settlementType;
-};
+//******************* AddSettlement *******************
+
 //AddSettlement: constructor
-Addsettlement::Addsettlement(const string &settlementName,SettlementType settlementType):errorMsg("Settlement already exists"),status(ACTIONSTATUS::ERROR), settlementName(settlementName),settlementType(settlementType){}
+Addsettlement::Addsettlement(const string &settlementName,SettlementType settlementType):errorMsg("Settlement already exists"),status(ActionStatus::ERROR), settlementName(settlementName),settlementType(settlementType){}
 
 //AddSettlement: copy constructor
 AddSettlement::AddSettlement(const AddSettlement &other):errorMsg(other.errorMsg),status(other.status), settlementName(other.settlementName),settlementType(other.settlementType){}
 
 //AddSettlement: methods
 void AddSettlement::act(Simulation &simulation) {
-    if (Simulation->addSettlement(this->settlementName, this->SettlementType)){complete();}
-    else{error();}
+    if (Simulation->addSettlement(new Settlement(this->settlementName, this->SettlementType))){
+        complete();
+    }
+    else{error(this->errorMsg);}
 }
 
 const string AddSettlement::toString() const {return "settlement " << this->settlementName << " " << static_cast<int>(this->selectionPolicy)<< " " <<this->status;}
@@ -114,114 +114,137 @@ const string AddSettlement::toString() const {return "settlement " << this->sett
  AddSettlement* AddSettlement::clone() const {return new AddSettlement(*this);}
 
 
-class AddFacility : public BaseAction {
-    public:
-        const string facilityName;
-        const FacilityCategory facilityCategory;
-        const int price;
-        const int lifeQualityScore;
-        const int economyScore;
-        const int environmentScore;
+//******************* AddFacility *******************
 
-};
 //AddFacility: constructor
 AddFacility::AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore):
-(errorMsg("Facility already exists"),status(ACTIONSTATUS::ERROR), facilityName(facilityName), facilityCategory(facilityCategory), price(price), lifeQualityScore(lifeQualityScore), economyScore(economyScore), environmentScore(environmentScore)){}
+(errorMsg("Facility already exists"),status(ActionStatus::ERROR), facilityName(facilityName), facilityCategory(facilityCategory), price(price), lifeQualityScore(lifeQualityScore), economyScore(economyScore), environmentScore(environmentScore)){}
 
 //AddFacility: copy constructor
 AddFacility::AddFacility(const AddFacility &other):errorMsg(other.errorMsg),status(other.status), facilityName(other.facilityName), facilityCategory(other.facilityCategory), price(other.price), lifeQualityScore(other.lifeQualityScore), economyScore(other.economyScore), environmentScore(other.environmentScore){}
 
 //AddFacility: methods
 void AddFacility::act(Simulation &simulation) {
-    if (Simulation->AddFacility(this->settlementName, this->SettlementType)){complete();}
-    else{error();}
+    if (Simulation->addFacility(FacilityType(this->facilityName, this->facilityCategory, this->price, this->lifeQualityScore, this->economyScore, this->environmentScore))){
+        complete();
+    }
+    else{
+        error(this->errorMsg);
+    }
 }
 
 const string AddFacility::toString() const {return "facility " << this->facilityName << " " << static_cast<int>(this->facilityCategory)<< " " << this->price << " " << this->lifeQualityScore << " " << this-> economyScore<< " " << this->environmentScore << " " << this->status;}
 
  AddFacility* AddFacility::clone() const {return new AddFacility(*this);}
 
-class PrintPlanStatus: public BaseAction {
-        const int planId;
-};
+//******************* PrintPlanStatus *******************
 
+//PrintPlanStatus: constructor
+PrintPlanStatus::PrintPlanStatus(int planId):errorMsg(""), status(ActionStatus::ERROR), planId(planId) {}
 
-class ChangePlanPolicy : public BaseAction {
-        const int planId;
-        const string newPolicy;
-        //CONSIDER ADDING: const string prevPolicy;
-};
+//PrintPlanStatus: copy constructor
+PrintPlanStatus::PrintPlanStatus(const PrintPlanStatus &other):errorMsg(other.errorMsg),status(other.status), planId(other.planId){}
+
+//PrintPlanStatus: methods
+void PrintPlanStatus::act(Simulation &simulation){
+    if(isPlanExists(this->planId)){
+        error();
+    }
+    else{
+        simulation.getPlan(this->planId).printStatus();
+        complete(); 
+    }
+    
+
+}
+PrintPlanStatus::toString(){return "PrintPlanStatus" << this->planId << " " << this->status ;}
+
+PrintPlanStatus::clone(){return new PrintPlanStatus(*this);}
+
+//******************* ChangePlanPolicy *******************
 
 //ChangePlanPolicy: constructor
-ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy):errorMsg("Cannot change selection policy"), status(ACTIONSTATUS::ERROR), planId(planId), newPolicy(newPolicy), prevPolicy(""){}
+ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy):errorMsg("Cannot change selection policy"), status(ActionStatus::ERROR), planId(planId), newPolicy(newPolicy){}
 
 //ChangePlanPolicy: copy constructor
-ChangePlanPolicy::ChangePlanPolicy(const ChangePlanPolicy &other):errorMsg(other.errorMsg),status(other.status), planId(other.planId), newPolicy(other.newPolicy), prevPolicy(other.prevPolicy){}
+ChangePlanPolicy::ChangePlanPolicy(const ChangePlanPolicy &other):errorMsg(other.errorMsg),status(other.status), planId(other.planId), newPolicy(other.newPolicy){}
 
 //ChangePlanPolicy: methods
 void ChangePlanPolicy::act(Simulation &simulation){
-    if (simulation.changePlanPolicy(this->planId, this->newPolicy)){complete();}
-    else{error();}}
-    //ASK FROM AMIT TO RETURN PREV POLICY AND CHANGE ACT ACCORFINGLY
+    if (isPlanExists(planId)){
+        Plan& p = simulation.getPlan(planId);
+        string prevPolicy = p.selectionPolicy->toStringFullName();
+        if (simulation.changePlanPolicy(this->planId, this->newPolicy)){
+            complete();
+            cout << "planID: " << this->planId << endl;
+            cout << "previouspolicy: " << prevPolicy << endl;
+            cout << "newPolicy: " << p.selectionPolicy->toStringFullName() << endl;
+        }
+        else{
+        error(this->errorMsg);
+        }
+    }
+    else{
+        error(this->errorMsg);
+    }
+}
 
-ChangePlanPolicy::toString(){return "planID:" << this->planId << "/n" << "previousPolicy:" << this->prevPolicy << "/n" << "newPolicy: " << this->newPolicy ;}
-//CONSIDER CHANGING THE RETURN
+ChangePlanPolicy::toString(){return "changePolicy:" << this->planId << " " << this->newPolicy << " " << this->status ;}
 
 ChangePlanPolicy::clone(){return new ChangePlanPolicy(*this);}
 
 
+//******************* PrintActionsLog *******************
 
-
-class PrintActionsLog : public BaseAction {
-};
 //PrintActionsLog: constructor
-PrintActionsLog::PrintActionsLog():errorMsg(""), status(ACTIONSTATUS::ERROR){}
+PrintActionsLog::PrintActionsLog():errorMsg(""), status(ActionStatus::ERROR){}
 
 //PrintActionsLog: copy constructor
 PrintActionsLog::PrintActionsLog(const PrintActionsLog &other):errorMsg(other.errorMsg),status(other.status){}
 
 //PrintActionsLog: methods
 void PrintActionsLog::act(Simulation &simulation){
-    //loop through actions log simulations, print every to string of action. 
+    int log_size = simulation.actionsLog.size();
+    for (i = 0; i < log_size; i++){
+        cout << actionsLog.at(i).toString() << endl;
+    }
     complete();
-
 }
-PrintActionsLog::toString(){return "Log" << this->status ;}
+PrintActionsLog::toString(){return "log" << this->status ;}
 
 PrintActionsLog::clone(){return new PrintActionsLog(*this);}
 
-class Close : public BaseAction {
 
-};
+
+//******************* Close *******************
+
 //close: constructor
-Close::Close():errorMsg(""), status(ACTIONSTATUS::ERROR){}
+Close::Close():errorMsg(""), status(ActionStatus::ERROR){}
 
 //Close: copy constructor
 Close::Close(const Close &other):errorMsg(other.errorMsg),status(other.status){}
 
 //Close: methods
 void Close::act(Simulation &simulation){
-    //loops through simulation.plan.printStatus()
     simulation.close();
     complete();
-    
-
 }
-Close::toString(){return "close" << this->status ;}
+
+Close::toString(){return "close " << this->status;}
 
 Close::clone(){return new Close(*this);}
 
-class BackupSimulation : public BaseAction {
+//******************* BackupSimulation *******************
 
-};
 //backupsimulation: constructor
-BackupSimulation::BackupSimulation():errorMsg(""), status(ACTIONSTATUS::ERROR){}
+BackupSimulation::BackupSimulation():errorMsg(""), status(ActionStatus::ERROR){}
 
 //BackupSimulation: copy constructor
 BackupSimulation::BackupSimulation(const BackupSimulation &other):errorMsg(other.errorMsg),status(other.status){}
 
 //BackupSimulation: methods
 void BackupSimulation::act(Simulation &simulation){
+    if(backup){delete backup;}
     backup = Simulation.clone();
     complete();
     
@@ -232,12 +255,11 @@ BackupSimulation::toString(){return "BackupSimulation" << this->status ;}
 BackupSimulation::clone(){return new BackupSimulation(*this);}
 
 
-class RestoreSimulation : public BaseAction {
+//******************* RestoreSimulation *******************
 
-};
 //restoresimulation: constructor
 //building an assignment operator here for simulation
-RestoreSimulation::RestoreSimulation():errorMsg("No backup available"), status(ACTIONSTATUS::ERROR){}
+RestoreSimulation::RestoreSimulation():errorMsg("No backup available"), status(ActionStatus::ERROR){}
 
 //RestoreSimulation: copy constructor
 RestoreSimulation::RestoreSimulation(const RestoreSimulation &other):errorMsg(other.errorMsg),status(other.status){}
@@ -248,7 +270,10 @@ void RestoreSimulation::act(Simulation &simulation){
         simulation = *backup;
         complete();
     }
-    error();
+    else{
+        error(this->errorMsg);
+    }
+    
     
 
 }

@@ -13,7 +13,54 @@ using namespace std;
 Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions):
 plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), status(PlanStatus::AVALIABLE), facilities{}, underConstruction{}, facilityOptions{}, life_quality_score(0), economy_score(0), environment_score(0) {
 }
-// Plan: copy constructor and copy assignment operator - NOT REQUIRED
+
+//Plan: copy constructor
+Plan::Plan(const Plan& other):plan_id(other.plan_id), settlement(other.settlement), selectionPolicy(other.selectionPolicy), status(other.status), facilities{}, underConstruction{}, facilityOptions(other.facilityOptions), life_quality_score(other.life_quality_score), economy_score(other.economy_score), environment_score(other.environment_score) {
+    int facilities_size = static_cast<int>(other.facilities.size()); //casting size to int (otherwise can't compare i to size)
+    int underConstruction_size = static_cast<int>(other.underConstruction.size()); //casting size to int (otherwise can't compare i to size)
+    for(int i=0; i<facilities_size; i++){
+        facilities.push_back(other.facilities.at(i)->clone());
+    }
+    for(int i=0; i<underConstruction_size; i++){
+        underConstruction.push_back(other.underConstruction.at(i)->clone());
+    }
+}
+
+// Plan: copy assignment operator
+// Plan& Plan::operator=(const Plan& other){
+//     if(&other != this){
+//         this->plan_id = other.plan_id;
+//         this->settlement = other.settlement;
+//         delete this->selectionPolicy;
+//         this->selectionPolicy = other.selectionPolicy->clone();
+//         this->status = other.status;
+//         this->facilityOptions = other.facilityOptions;
+//         this->life_quality_score = other.life_quality_score;
+//         this->economy_score = other.economy_score;
+//         this->environment_score = other.environment_score;
+//         int facilities_size = static_cast<int>(this->facilities.size()); //casting size to int (otherwise can't compare i to size)
+//         int underConstruction_size = static_cast<int>(this->underConstruction.size()); //casting size to int (otherwise can't compare i to size)
+//         for(int i=0; i<facilities_size; i++){
+//         delete this->facilities.at(i);
+//         }
+//         for(int i=0; i<underConstruction_size; i++){
+//             delete this->underConstruction.at(i);
+//         }
+//         facilities.clear();
+//         underConstruction.clear();
+//         int facilities_size_other = static_cast<int>(other.facilities.size()); //casting size to int (otherwise can't compare i to size)
+//         int underConstruction_size_other = static_cast<int>(other.underConstruction.size()); //casting size to int (otherwise can't compare i to size)
+//         for(int i=0; i<facilities_size_other; i++){
+//             facilities.push_back(other.facilities.at(i)->clone());
+//         }
+//         for(int i=0; i<underConstruction_size_other; i++){
+//             underConstruction.push_back(other.underConstruction.at(i)->clone());
+//         }
+//     }
+//     return *this;
+// }
+
+
 // Plan: destructor
 Plan::~Plan(){
     delete selectionPolicy;
@@ -54,6 +101,11 @@ void Plan::step(){
             this->life_quality_score = this->economy_score + f->getLifeQualityScore();
             underConstruction.erase(underConstruction.begin()+i);}
     }
+    int constractionLimit = static_cast<int>(this->settlement.getType()) + 1;
+    int UC_size = underConstruction.size();
+    if(constractionLimit>UC_size){
+        this->status = PlanStatus::AVALIABLE;
+    }
 
 }
 
@@ -77,20 +129,24 @@ void Plan::printStatus(){
 
 }
 
+void Plan::printForClose(){
+    std::cout << this->toString() << std::endl;
+    std::cout << settlement.toString()<< std::endl;
+    std::cout << "SelectionPolicy:" << selectionPolicy->toString() <<std::endl;
+    std::cout << "LifeQualityScore:" << this->getlifeQualityScore()<< std::endl;
+    std::cout << "EconomyScore:" << this->getEconomyScore()<< std::endl;
+    std::cout << "EnvrionmentScore:" << this->getEnvironmentScore()<< std::endl;
+}
+
 const vector<Facility*>& Plan::getFacilities() const{
     return facilities;
 }
 
 void Plan::addFacility(Facility* facility){
     underConstruction.push_back(facility);
-    //do we need to increment the score of the balanced selection (if using the balanced selec - 
-    // need to make sure its updated)?
-    // what happens if we want to add 3 facilities in a time in balanced. does it consider the scores    
-    /*
-       if(this->getSelectionPolicy == "bal"){
-        this->s
-    */
-
+    if(this->getSelectionPolicy() == "bal"){
+        this->selectionPolicy->incrementScores(facility->getLifeQualityScore(), facility->getEconomyScore(), facility->getEnvironmentScore());
+    }
 }
 
 const string Plan::toString() const{return "PlanID:" + this->plan_id;}

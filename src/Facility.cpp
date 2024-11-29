@@ -62,3 +62,7 @@ const string Facility::toStringStatus() const{
     return "";
 }
 
+Facility* Facility::clone() const{
+    return new Facility(*this);
+}
+
