@@ -28,38 +28,40 @@ Simulation::Simulation(const string &configFilePath):isRunning(false), planCount
     while (std::getline(file, line)) {
         if(line[0]!='#'){
             vector<string> args = Auxiliary::parseArguments(line);
-            switch(args[0]){
-
                 //# settlement <settlement_name> <settlement_type> 
-                case "settlement":
+                if(args[0] == "settlement"){
                     //change according to cast - 2 next lines 
                     const std::array<SettlementType, 3> types = {SettlementType::VILLAGE, SettlementType::CITY, SettlementType::METROPOLIS};
-                    settlements.push_back(new Settlement::Settlement(args[1],types[stoi(args[2])]));
+                    settlements.push_back(new Settlement(args[1],types[stoi(args[2])]));
 
+                }
                 //# facility <facility_name> <category> <price> <lifeq_impact> <eco_impact> <env_impact>
-                case "facility":
+                if(args[0] == "facility"){
                     //change according to cast - 2 next lines 
                     const std::array<FacilityCategory, 3> category = {FacilityCategory::LIFE_QUALITY, FacilityCategory::ECONOMY, FacilityCategory::ENVIRONMENT};
-                    facilitiesOptions.push_back(FacilityType::FacilityType(args[1], category[stoi(args[2])],stoi(args[3]), stoi(args[4]), stoi(args[5]), stoi(args[6])));
-
+                    facilitiesOptions.push_back(FacilityType(args[1], category[stoi(args[2])],stoi(args[3]), stoi(args[4]), stoi(args[5]), stoi(args[6])));
+                }
                 //# plan <settlement_name> <selection_policy>
-                case "plan":
-                    switch(args[2]){
-                        case "bal":
-                            plans.push_back(Plan::Plan(planCounter, args[1], new BalancedSelection::BalancedSelection(0,0,0), facilitiesOptions));
-                        case "eco":
-                            plans.push_back(Plan::Plan(planCounter, args[1], new EconomySelection::EconomySelection(), facilitiesOptions));
-                        case "nve":
-                            plans.push_back(Plan::Plan(planCounter, args[1], new NaiveSelection::NaiveSelection(), facilitiesOptions));
-                        case "env":
-                            plans.push_back(Plan::Plan(planCounter, args[1], new SustainabilitySelection::SustainabilitySelection(), facilitiesOptions));
+                if(args[0] == "plan"){
+                        if(args[2] == "bal"){
+                            //required to create get settlement that returns refernce to args[1]!!!!!!!!!!!!!!!!!!!!!!
+                            plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new BalancedSelection(0,0,0), facilitiesOptions));
+                        }
+                        if(args[2] == "eco"){
+                            plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new EconomySelection(), facilitiesOptions));
+                        }
+                        if(args[2] == "eco"){
+                            plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new NaiveSelection(), facilitiesOptions));
+                        }
+                        if(args[2] == "eco"){
+                            plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new SustainabilitySelection(), facilitiesOptions));
+                        }     
                     }
-                    planCounter++;
-                    //seems like we should use some implementation of the rule of 5!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            }
+                this->planCounter++;
+                }
         } 
-    } 
 }
+//seems like we should use some implementation of the rule of 5!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 void Simulation::start(){
@@ -156,13 +158,14 @@ bool Simulation::isFacilityExists(const string &facilityName){
  }
 
 Settlement& Simulation::getSettlement(const string &settlementName){
+
     for(Settlement* s: settlements){
         if(s->getName() == settlementName){
             return *s;
         }
     }
-    return Settlement("invalid", SettlementType::VILLAGE);
-
+    Settlement* s = nullptr;
+    return *s;
     // what can i do here?
     /*
         return *std::find_if(settlements.begin(), settlements.end(), [settlementName](const Settlement& sett){
@@ -173,12 +176,13 @@ Settlement& Simulation::getSettlement(const string &settlementName){
 }
 
 Plan& Simulation::getPlan(const int planId){
-    for(Plan p: plans){
+    for(Plan& p: plans){
         if(p.getID() == planId){
             return p;
         }
     }
-    return p;
+    Plan* p = nullptr;
+    return *p;
     /*
         return *std::find_if(plans.begin(), plans.end(), [planId](const Plan& p){
     return p.getID() == planId
@@ -246,6 +250,7 @@ Plan& Simulation::getPlan(const int planId){
  Simulation& operator=(const Simulation& other);
 
  Simulation:: ~Simulation (){
+    //consider writing with a for loop
     for(BaseAction* ba: actionsLog){
         delete ba;
     }
