@@ -81,12 +81,7 @@ const vector<Facility*>& Plan::getFacilities() const{return facilities;}
 
 void Plan::addFacility(Facility* facility){
     underConstruction.push_back(facility);
-    //do we need to increment the score of the balanced selection (if using it)?
-    
-    /*
-       if(this->getSelectionPolicy == "bal"){
-        this->s
-    */
+
 
 }
 
