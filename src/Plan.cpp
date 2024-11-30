@@ -106,6 +106,8 @@ void Plan::step(){
 
     }
     int uc_size = static_cast<int>(underConstruction.size());
+    int toRemove_size = uc_size;
+    vector<bool> toRemove(uc_size,false);
     for (int i = 0; i < uc_size ;i++){
         Facility* f = underConstruction.at(i);
         if (f->step() == FacilityStatus::OPERATIONAL){
@@ -113,9 +115,15 @@ void Plan::step(){
             this->economy_score = this->economy_score + f->getEconomyScore();
             this->environment_score = this->environment_score + f->getEnvironmentScore();
             this->life_quality_score = this->life_quality_score + f->getLifeQualityScore();
-            underConstruction.erase(underConstruction.begin() + i);
+            toRemove[i] = true;
+        }
+    }
+    for (int j = toRemove_size - 1; j >= 0 ; j--){
+        if(toRemove[j]){
+            underConstruction.erase(underConstruction.begin() + j);
             uc_size--;
-            }
+        }
+
     }
     int constractionLimit = static_cast<int>(this->settlement.getType()) + 1;
     if(constractionLimit > uc_size){
@@ -138,7 +146,6 @@ void Plan::printStatus(){
     std::cout << "EconomyScore:" << this->getEconomyScore()<< std::endl;
     std::cout << "EnvrionmentScore:" << this->getEnvironmentScore()<< std::endl;
     //for-loop to regular
-
     // for (Facility* f: this->underConstruction){
     //     std::cout << f->toString()<< std::endl;
     //     std::cout << f->toStringStatus()<< std::endl;
@@ -208,7 +215,7 @@ const int Plan::getEconomyScore_UC() const{
 const int Plan::getEnvironmentScore_UC() const{
     int environmentScore_UC = 0;
     for(Facility* f: underConstruction){
-        environmentScore_UC = environmentScore_UC + f->getEconomyScore();
+        environmentScore_UC = environmentScore_UC + f->getEnvironmentScore();
     }
     return environmentScore_UC;
 }

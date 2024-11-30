@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 #include <algorithm>
 #include <climits>
 #include "Facility.h"
@@ -58,11 +59,14 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
         int maximum = *maxi;
         int minimum = *mini;
         diffs[i] = maximum - minimum;
+        cout << "diff: " << diffs[i] << " mimish " << i << endl;
         if (diffs[i] < minDiff) {
             minDiff = diffs[i];
             indexOfMin = i;
         }
+        cout << "min: " << minDiff << " mimish" << "i: " << i << endl;
     }
+    cout << "index of min: "<< indexOfMin << endl;
     return facilitiesOptions[indexOfMin];
 }
 
@@ -79,9 +83,9 @@ BalancedSelection* BalancedSelection::clone() const {
 }
 
  void BalancedSelection::incrementScores(int LQ, int EC, int EN){
-    this->LifeQualityScore += LQ;
-    this->EconomyScore += EC;
-    this->EnvironmentScore += EN;
+    this->LifeQualityScore = this->LifeQualityScore + LQ;
+    this->EconomyScore = this->EconomyScore + EC;
+    this->EnvironmentScore = this->EnvironmentScore + EN;
 }
 
 
