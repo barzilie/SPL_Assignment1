@@ -298,15 +298,16 @@ Simulation& Simulation::operator=(const Simulation& other){
             //maybe crete clone instead of making "new" statement
             settlements.push_back(new Settlement(*(other.settlements.at(i))));
         } 
-        int facilities_size = static_cast<int>(other.facilitiesOptions.size()); //casting size to int (otherwise can't compare i to size)
-        for(int i=0; i<facilities_size; i++){
-            facilitiesOptions.push_back(FacilityType(other.facilitiesOptions.at(i)));
-        }
 
         int plans_size = static_cast<int>(other.plans.size()); //casting size to int (otherwise can't compare i to size)
         for(int i=0; i< plans_size; i++){
             Settlement& settle = getSettlement(other.plans.at(i).getSettlementName());
             plans.push_back(Plan(other.plans.at(i), settle));
+        }
+
+        int facilities_size = static_cast<int>(other.facilitiesOptions.size()); //casting size to int (otherwise can't compare i to size)
+        for(int i=0; i<facilities_size; i++){
+            facilitiesOptions.push_back(FacilityType(other.facilitiesOptions.at(i)));
         }
 
         int actions_size = static_cast<int>(other.actionsLog.size()); //casting size to int (otherwise can't compare i to size)
@@ -318,16 +319,70 @@ Simulation& Simulation::operator=(const Simulation& other){
     return *this;
 }
 
-Simulation:: ~Simulation (){
+Simulation::~Simulation (){
     clearSettlements();
     clearActionsLog();
 }
 
 //rule of 5 additions
-/*
-Simulation(Simulation&& other);
-Simulation& operator=(Simulation&& other);
-*/
+
+// move copy constructor
+Simulation::Simulation(Simulation&& other): isRunning(other.isRunning), planCounter(other.planCounter), actionsLog{}, plans{}, settlements{}, facilitiesOptions(other.facilitiesOptions){
+    int actions_size = static_cast<int>(other.actionsLog.size()); 
+    int settlements_size = static_cast<int>(other.settlements.size()); 
+    for(int i=0; i<actions_size; i++){
+        actionsLog.push_back(other.actionsLog.at(i));
+        other.actionsLog.at(i) = nullptr;
+    }
+    for(int i=0; i<settlements_size; i++){
+        settlements.push_back(other.settlements.at(i));
+        other.settlements.at(i) = nullptr;
+    }
+    int plans_size = static_cast<int>(other.plans.size()); //casting size to int (otherwise can't compare i to size)
+    for(int i=0; i< plans_size; i++){
+        Settlement& settle = getSettlement(other.plans.at(i).getSettlementName());
+        plans.push_back(Plan(other.plans.at(i), settle));
+    }
+}
+
+// move copy assignment operator
+Simulation& Simulation::operator=(Simulation&& other){
+        if(&other != this){
+        isRunning = other.isRunning;
+        planCounter = other.planCounter;
+        plans.clear();
+        facilitiesOptions.clear();
+        clearSettlements();
+        clearActionsLog();
+
+        int settlements_size = static_cast<int>(other.settlements.size()); 
+        for(int i=0; i<settlements_size; i++){
+            settlements.push_back(other.settlements.at(i));
+            other.settlements.at(i) = nullptr;
+
+        } 
+
+        int plans_size = static_cast<int>(other.plans.size()); 
+        for(int i=0; i< plans_size; i++){
+            Settlement& settle = getSettlement(other.plans.at(i).getSettlementName());
+            plans.push_back(Plan(other.plans.at(i), settle));
+        }
+
+        int facilities_size = static_cast<int>(other.facilitiesOptions.size()); //casting size to int (otherwise can't compare i to size)
+        for(int i=0; i<facilities_size; i++){
+            facilitiesOptions.push_back(FacilityType(other.facilitiesOptions.at(i)));
+        }        
+
+        int actions_size = static_cast<int>(other.actionsLog.size()); //casting size to int (otherwise can't compare i to size)
+        for(int i=0; i<actions_size; i++){
+            actionsLog.push_back(other.actionsLog.at(i));
+            other.actionsLog.at(i) = nullptr;
+        }
+  
+    }
+    return *this;
+
+}
 
 
 void Simulation::step(){

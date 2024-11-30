@@ -38,38 +38,20 @@ Plan::Plan(const Plan& other, const Settlement &settlement):plan_id(other.plan_i
     }
 }
 
-//Plan: copy assignment operator
-// Plan& Plan::operator=(const Plan& other){
-//     if(&other != this){
-//         this->plan_id = other.plan_id;
-//         delete this->selectionPolicy;
-//         this->selectionPolicy = other.selectionPolicy->clone();
-//         this->status = other.status;
-//         this->life_quality_score = other.life_quality_score;
-//         this->economy_score = other.economy_score;
-//         this->environment_score = other.environment_score;
-//         int facilities_size = static_cast<int>(this->facilities.size()); //casting size to int (otherwise can't compare i to size)
-//         int underConstruction_size = static_cast<int>(this->underConstruction.size()); //casting size to int (otherwise can't compare i to size)
-//         for(int i=0; i<facilities_size; i++){
-//         delete this->facilities.at(i);
-//         }
-//         for(int i=0; i<underConstruction_size; i++){
-//             delete this->underConstruction.at(i);
-//         }
-//         facilities.clear();
-//         underConstruction.clear();
-//         int facilities_size_other = static_cast<int>(other.facilities.size()); //casting size to int (otherwise can't compare i to size)
-//         int underConstruction_size_other = static_cast<int>(other.underConstruction.size()); //casting size to int (otherwise can't compare i to size)
-//         for(int i=0; i<facilities_size_other; i++){
-//             facilities.push_back(other.facilities.at(i)->clone());
-//         }
-//         for(int i=0; i<underConstruction_size_other; i++){
-//             underConstruction.push_back(other.underConstruction.at(i)->clone());
-//         }
-//     }
-//     return *this;
-// }
-
+// move copy constructor
+Plan::Plan(Plan &&other):plan_id(other.plan_id), settlement(other.settlement), selectionPolicy(other.selectionPolicy), status(other.status), facilities{}, underConstruction{}, facilityOptions(other.facilityOptions), life_quality_score(other.life_quality_score), economy_score(other.economy_score), environment_score(other.environment_score) {
+    other.selectionPolicy = nullptr;
+    int facilities_size = static_cast<int>(other.facilities.size()); 
+    int underConstruction_size = static_cast<int>(other.underConstruction.size()); 
+    for(int i=0; i<facilities_size; i++){
+        facilities.push_back(other.facilities.at(i));
+        other.facilities.at(i) = nullptr;
+    }
+    for(int i=0; i<underConstruction_size; i++){
+        underConstruction.push_back(other.underConstruction.at(i));
+        other.underConstruction.at(i) = nullptr;
+    }
+}
 
 // Plan: destructor
 Plan::~Plan(){
