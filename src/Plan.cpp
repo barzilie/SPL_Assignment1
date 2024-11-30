@@ -15,8 +15,7 @@ plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), statu
 }
 
 //Plan: copy constructor
-Plan::Plan(const Plan& other):plan_id(other.plan_id), settlement(other.settlement), status(other.status), facilities{}, underConstruction{}, facilityOptions(other.facilityOptions), life_quality_score(other.life_quality_score), economy_score(other.economy_score), environment_score(other.environment_score) {
-    selectionPolicy = other.selectionPolicy->clone();
+Plan::Plan(const Plan& other):plan_id(other.plan_id), settlement(other.settlement), selectionPolicy(other.selectionPolicy->clone()), status(other.status), facilities{}, underConstruction{}, facilityOptions(other.facilityOptions), life_quality_score(other.life_quality_score), economy_score(other.economy_score), environment_score(other.environment_score) {
     int facilities_size = static_cast<int>(other.facilities.size()); //casting size to int (otherwise can't compare i to size)
     int underConstruction_size = static_cast<int>(other.underConstruction.size()); //casting size to int (otherwise can't compare i to size)
     for(int i=0; i<facilities_size; i++){
@@ -27,15 +26,13 @@ Plan::Plan(const Plan& other):plan_id(other.plan_id), settlement(other.settlemen
     }
 }
 
-// Plan: copy assignment operator
+//Plan: copy assignment operator
 // Plan& Plan::operator=(const Plan& other){
 //     if(&other != this){
 //         this->plan_id = other.plan_id;
-//         this->settlement = other.settlement;
 //         delete this->selectionPolicy;
 //         this->selectionPolicy = other.selectionPolicy->clone();
 //         this->status = other.status;
-//         this->facilityOptions = other.facilityOptions;
 //         this->life_quality_score = other.life_quality_score;
 //         this->economy_score = other.economy_score;
 //         this->environment_score = other.environment_score;
@@ -93,41 +90,55 @@ void Plan::step(){
         this->status = PlanStatus::BUSY;
 
     }
-    for (int i = underConstruction.size() -1; i>=0;i--){
+    int uc_size = static_cast<int>(underConstruction.size());
+    for (int i = 0; i < uc_size ;i++){
         Facility* f = underConstruction.at(i);
-        if (f->step()==FacilityStatus::OPERATIONAL){
+        if (f->step() == FacilityStatus::OPERATIONAL){
             facilities.push_back(f);
             this->economy_score = this->economy_score + f->getEconomyScore();
-            this->environment_score = this->economy_score + f->getEnvironmentScore();
-            this->life_quality_score = this->economy_score + f->getLifeQualityScore();
-            underConstruction.erase(underConstruction.begin()+i);}
+            this->environment_score = this->environment_score + f->getEnvironmentScore();
+            this->life_quality_score = this->life_quality_score + f->getLifeQualityScore();
+            underConstruction.erase(underConstruction.begin() + i);
+            uc_size--;
+            }
     }
     int constractionLimit = static_cast<int>(this->settlement.getType()) + 1;
-    int UC_size = underConstruction.size();
-    if(constractionLimit>UC_size){
+    if(constractionLimit > uc_size){
         this->status = PlanStatus::AVALIABLE;
     }
-
 }
 
 void Plan::printStatus(){
     std::cout << this->toString() << std::endl;
     std::cout << settlement.toString()<< std::endl;
-    switch(status){
-        case PlanStatus::AVALIABLE:
-            std::cout << "PlanStatus:AVALIABLE" << std::endl;
-        case PlanStatus::BUSY:
-            std::cout << "PlanStatus:BUSY" << std::endl;
+    //has to insert an if statement
+    if(this->status == PlanStatus::AVALIABLE){
+        std::cout << "PlanStatus:AVALIABLE" << std::endl;
+    }
+    else{
+        std::cout << "PlanStatus:BUSY" << std::endl;
     }
     std::cout << "SelectionPolicy:" << selectionPolicy->toString() <<std::endl;
     std::cout << "LifeQualityScore:" << this->getlifeQualityScore()<< std::endl;
     std::cout << "EconomyScore:" << this->getEconomyScore()<< std::endl;
     std::cout << "EnvrionmentScore:" << this->getEnvironmentScore()<< std::endl;
-    for (Facility* f: facilities){
-        std::cout << f->toString()<< std::endl;
-        std::cout << f->toStringStatus()<< std::endl;
-    }
+    //for-loop to regular
 
+    // for (Facility* f: this->underConstruction){
+    //     std::cout << f->toString()<< std::endl;
+    //     std::cout << f->toStringStatus()<< std::endl;
+    // }
+
+    int underConstruction_size = static_cast<int>(underConstruction.size()); //casting size to int (otherwise can't compare i to size)
+    for(int i=0; i<underConstruction_size; i++){
+        cout << underConstruction.at(i)->toString()<< endl;
+        cout << underConstruction.at(i)->toStringStatus()<< endl;
+    }
+    int facilities_size = static_cast<int>(this->facilities.size()); //casting size to int (otherwise can't compare i to size)
+    for(int i=0; i<facilities_size; i++){
+        cout << (facilities.at(i))->toString()<< endl;
+        cout << facilities.at(i)->toStringStatus()<< endl;
+    }
 }
 
 void Plan::printForClose(){

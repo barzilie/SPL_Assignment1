@@ -286,7 +286,7 @@ Simulation& Simulation::operator=(const Simulation& other){
         clearActionsLog();
 
         int plans_size = static_cast<int>(other.plans.size()); //casting size to int (otherwise can't compare i to size)
-        for(int i=0; i<plans_size; i++){
+        for(int i=0; i< plans_size; i++){
             plans.push_back(Plan(other.plans.at(i)));
         }
 
@@ -322,13 +322,13 @@ Simulation& operator=(Simulation&& other);
 
 
 void Simulation::step(){
-    for(Plan p: plans){
+    for(Plan& p: plans){
         p.step();
     }
 }
 
 void Simulation::close(){
-    for(Plan p: plans){
+    for(Plan& p: plans){
         p.printForClose();
     }
     this->isRunning = false;

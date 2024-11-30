@@ -26,9 +26,12 @@ void BaseAction::complete(){
 }
 
 void BaseAction::error(string errorMsg){
-    cout << errorMsg << endl;}
+    cout << errorMsg << endl;
+}
 
-const string& BaseAction::getErrorMsg() const{return this->errorMsg;}
+const string& BaseAction::getErrorMsg() const{
+    return this->errorMsg;
+}
 
 const string BaseAction::getStringStatus() const{
     if(getStatus() == ActionStatus::COMPLETED){
@@ -162,14 +165,14 @@ const string AddFacility::toString() const {
 //******************* PrintPlanStatus *******************
 
 //PrintPlanStatus: constructor
-PrintPlanStatus::PrintPlanStatus(int planId):BaseAction(), planId(planId) {}
+PrintPlanStatus::PrintPlanStatus(int planId):BaseAction("Plan doesn't exist"), planId(planId) {}
 
 //PrintPlanStatus: copy constructor
 PrintPlanStatus::PrintPlanStatus(const PrintPlanStatus &other):BaseAction(other), planId(other.planId){}
 
 //PrintPlanStatus: methods
 void PrintPlanStatus::act(Simulation &simulation){
-    if(simulation.isPlanExists(this->planId)){
+    if(!simulation.isPlanExists(this->planId)){
         error(this->getErrorMsg());
     }
     else{

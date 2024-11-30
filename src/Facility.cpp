@@ -41,7 +41,9 @@ const int Facility::getTimeLeft() const{return timeLeft;}
 
 FacilityStatus Facility::step(){
     timeLeft = getTimeLeft()-1;
-    if (timeLeft == 0){setStatus(FacilityStatus::OPERATIONAL);}
+    if (timeLeft == 0){
+        setStatus(FacilityStatus::OPERATIONAL);
+    }
     return getStatus();
 }
 
@@ -49,7 +51,7 @@ void Facility::setStatus(FacilityStatus status){this->status = status;}
 
 const FacilityStatus& Facility::getStatus() const{return status;}
 
-const string Facility::toString() const{return "FacilityName:"+name;}
+const string Facility::toString() const{return "FacilityName: "+ name;}
 
 const string Facility::toStringStatus() const{
     FacilityStatus currentStatus = this->getStatus();
