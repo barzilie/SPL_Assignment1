@@ -266,7 +266,7 @@ Simulation *Simulation::clone() const{
 
 //rule of 3 additions
 
- Simulation::Simulation(const Simulation& other): isRunning(other.isRunning), planCounter(other.planCounter), actionsLog{}, settlements{}, facilitiesOptions(other.facilitiesOptions){
+ Simulation::Simulation(const Simulation& other): isRunning(other.isRunning), planCounter(other.planCounter), actionsLog{}, plans{}, settlements{}, facilitiesOptions(other.facilitiesOptions){
     int actions_size = static_cast<int>(other.actionsLog.size()); //casting size to int (otherwise can't compare i to size)
     int settlements_size = static_cast<int>(other.settlements.size()); //casting size to int (otherwise can't compare i to size)
     for(int i=0; i<actions_size; i++){
