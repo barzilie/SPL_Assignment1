@@ -13,7 +13,7 @@ using namespace std;
 //constructor
 NaiveSelection::NaiveSelection():lastSelectedIndex(0){}
 
-//added copy constructor (for clone)
+//copy constructor
 NaiveSelection::NaiveSelection(const NaiveSelection &ns):lastSelectedIndex(ns.lastSelectedIndex){}
 
 
@@ -23,12 +23,13 @@ const FacilityType& NaiveSelection::selectFacility(const vector<FacilityType>& f
     return facilitiesOptions[current_index];
 }
 
-const string NaiveSelection::toString() const {return "nve";}
+const string NaiveSelection::toString() const {
+    return "nve";
+}
 
 const string NaiveSelection::toStringFullName() const {
     return "Naive";
 }
-
 
 NaiveSelection* NaiveSelection::clone() const {
     return new NaiveSelection(*this);
@@ -42,7 +43,7 @@ void NaiveSelection::incrementScores(int LQ, int EC, int EN) {} //for resolving 
 //constructor
 BalancedSelection::BalancedSelection(int LifeQualityScore, int EconomyScore, int EnvironmentScore):LifeQualityScore(LifeQualityScore), EconomyScore(EconomyScore), EnvironmentScore(EnvironmentScore){}
 
-//added copy constructor (for clone)
+//copy constructor
 BalancedSelection::BalancedSelection(const BalancedSelection &bs):LifeQualityScore(bs.LifeQualityScore), EconomyScore(bs.EconomyScore), EnvironmentScore(bs.EnvironmentScore){}
 
 const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
@@ -68,13 +69,14 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
 }
 
 
-const string BalancedSelection::toString() const {return "bal";}
+const string BalancedSelection::toString() const {
+    return "bal";
+}
 
 const string BalancedSelection::toStringFullName() const {
     return "Balanced";
 }
     
-
 BalancedSelection* BalancedSelection::clone() const {
     return new BalancedSelection(*this);
 }
@@ -91,7 +93,7 @@ BalancedSelection* BalancedSelection::clone() const {
 //constructor
 EconomySelection::EconomySelection():lastSelectedIndex(0){}
 
-//added copy constructor (for clone)
+//copy constructor
 EconomySelection::EconomySelection(const EconomySelection &ecs):lastSelectedIndex(ecs.lastSelectedIndex){}
 
 const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
@@ -113,13 +115,14 @@ const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>&
 }
 
 
-const string EconomySelection::toString() const {return "eco";}
+const string EconomySelection::toString() const {
+    return "eco";
+}
 
 const string EconomySelection::toStringFullName() const {
     return "Economy";
 }
     
-
 EconomySelection* EconomySelection::clone() const {
     return new EconomySelection(*this);
 }
@@ -128,14 +131,12 @@ void EconomySelection::incrementScores(int LQ, int EC, int EN) {} //for resolvin
 
 
 
-
-
 //************* SustainabilitySelection implementation: ************* 
 
 //constructor
 SustainabilitySelection::SustainabilitySelection():lastSelectedIndex(0){}
 
-//added copy constructor (for clone)
+//copy constructor
 SustainabilitySelection::SustainabilitySelection(const SustainabilitySelection &ss):lastSelectedIndex(ss.lastSelectedIndex){}
 
 const FacilityType& SustainabilitySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
@@ -154,16 +155,16 @@ const FacilityType& SustainabilitySelection::selectFacility(const vector<Facilit
         }
     }
     return facilitiesOptions[0];
-
 }
 
 
-const string SustainabilitySelection::toString() const {return "env";}
+const string SustainabilitySelection::toString() const {
+    return "env";
+}
 
 const string SustainabilitySelection::toStringFullName() const {
     return "Sustainability";
 }
-    
 
 SustainabilitySelection* SustainabilitySelection::clone() const {
     return new SustainabilitySelection(*this);

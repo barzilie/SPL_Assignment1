@@ -14,35 +14,36 @@ enum class PlanStatus {
 class Plan {
     public:
         Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions);
-        Plan(const Plan &other);
-        Plan(const Plan& other, const Settlement &settlement);
-        Plan& operator=(const Plan& other) = delete;
-        Plan(Plan &&other);
+        Plan(const Plan &other); //added function
+        Plan(const Plan& other, const Settlement &settlement); //added function
+        Plan& operator=(const Plan& other) = delete; 
+        Plan(Plan &&other); //added function
         Plan& operator=(Plan&& other) = delete;
-        virtual ~Plan();
+        virtual ~Plan(); //added function
         const int getlifeQualityScore() const;
         const int getEconomyScore() const;
         const int getEnvironmentScore() const;
         void setSelectionPolicy(SelectionPolicy *selectionPolicy);
         void step();
         void printStatus();
-        void printForClose();
+        void printForClose(); //added function
         const vector<Facility*> &getFacilities() const;
         void addFacility(Facility* facility);
         const string toString() const;
-        const int getID() const;
-        const string getSelectionPolicy() const;
-        const string getSelectionPolicyFN() const;
+        const int getID() const; //added function
+        const string getSelectionPolicy() const; //added function
+        const string getSelectionPolicyFN() const; //added function
+
         //new getters that return the scores of the under construction facilities
         const int getlifeQualityScore_UC() const;
         const int getEconomyScore_UC() const;
         const int getEnvironmentScore_UC() const;
-        const string getSettlementName() const;
+        const string getSettlementName() const; //added function
 
     private:
         int plan_id;
         const Settlement &settlement;
-        SelectionPolicy *selectionPolicy; //What happens if we change this to a reference?
+        SelectionPolicy *selectionPolicy; 
         PlanStatus status;
         vector<Facility*> facilities;
         vector<Facility*> underConstruction;

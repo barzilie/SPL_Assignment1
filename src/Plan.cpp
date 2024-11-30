@@ -26,7 +26,7 @@ Plan::Plan(const Plan& other):plan_id(other.plan_id), settlement(other.settlemen
     }
 }
 
-//special copy constructor for passing reference to settlement
+// special copy constructor for passing: other, and a reference to settlement
 Plan::Plan(const Plan& other, const Settlement &settlement):plan_id(other.plan_id), settlement(settlement), selectionPolicy(other.selectionPolicy->clone()), status(other.status), facilities{}, underConstruction{}, facilityOptions(other.facilityOptions), life_quality_score(other.life_quality_score), economy_score(other.economy_score), environment_score(other.environment_score) {
     int facilities_size = static_cast<int>(other.facilities.size()); //casting size to int (otherwise can't compare i to size)
     int underConstruction_size = static_cast<int>(other.underConstruction.size()); //casting size to int (otherwise can't compare i to size)
@@ -61,7 +61,8 @@ Plan::~Plan(){
     }
     for (Facility* f: underConstruction){
         delete f;
-    }}
+    }
+}
 
 //Plan: methods
 const int Plan::getlifeQualityScore() const{return life_quality_score;}
@@ -87,7 +88,6 @@ void Plan::step(){
             availabeSpots--;
         }
         this->status = PlanStatus::BUSY;
-
     }
     int uc_size = static_cast<int>(underConstruction.size());
     int toRemove_size = uc_size;
@@ -107,7 +107,6 @@ void Plan::step(){
             underConstruction.erase(underConstruction.begin() + j);
             uc_size--;
         }
-
     }
     int constractionLimit = static_cast<int>(this->settlement.getType()) + 1;
     if(constractionLimit > uc_size){
@@ -118,7 +117,6 @@ void Plan::step(){
 void Plan::printStatus(){
     std::cout << this->toString() << std::endl;
     std::cout << settlement.toString()<< std::endl;
-    //has to insert an if statement
     if(this->status == PlanStatus::AVALIABLE){
         std::cout << "PlanStatus:AVALIABLE" << std::endl;
     }
@@ -129,18 +127,13 @@ void Plan::printStatus(){
     std::cout << "LifeQualityScore:" << this->getlifeQualityScore()<< std::endl;
     std::cout << "EconomyScore:" << this->getEconomyScore()<< std::endl;
     std::cout << "EnvrionmentScore:" << this->getEnvironmentScore()<< std::endl;
-    //for-loop to regular
-    // for (Facility* f: this->underConstruction){
-    //     std::cout << f->toString()<< std::endl;
-    //     std::cout << f->toStringStatus()<< std::endl;
-    // }
 
     int underConstruction_size = static_cast<int>(underConstruction.size()); //casting size to int (otherwise can't compare i to size)
     for(int i=0; i<underConstruction_size; i++){
         cout << underConstruction.at(i)->toString()<< endl;
         cout << underConstruction.at(i)->toStringStatus()<< endl;
     }
-    int facilities_size = static_cast<int>(this->facilities.size()); //casting size to int (otherwise can't compare i to size)
+    int facilities_size = static_cast<int>(this->facilities.size()); 
     for(int i=0; i<facilities_size; i++){
         cout << (facilities.at(i))->toString()<< endl;
         cout << facilities.at(i)->toStringStatus()<< endl;
@@ -150,7 +143,6 @@ void Plan::printStatus(){
 void Plan::printForClose(){
     std::cout << this->toString() << std::endl;
     std::cout << settlement.toString()<< std::endl;
-    //std::cout << "SelectionPolicy:" << selectionPolicy->toString() <<std::endl;
     std::cout << "LifeQualityScore:" << this->getlifeQualityScore()<< std::endl;
     std::cout << "EconomyScore:" << this->getEconomyScore()<< std::endl;
     std::cout << "EnvrionmentScore:" << this->getEnvironmentScore()<< std::endl;
@@ -178,7 +170,7 @@ const string Plan::getSelectionPolicyFN() const
     return this->selectionPolicy->toStringFullName();
 }
 
-//under construction facilities scores
+//under construction facilities scores getters
 
 const int Plan::getlifeQualityScore_UC() const{
     int lifeQualityScore_UC = 0;

@@ -5,8 +5,10 @@
 using std::string;
 using std::vector;
 
-//FacilityType: constructor and copy constructor
-//may require a copy assignment constructor and destructor by the rule of 5!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//***************** FacilityType *****************
+
+//constructor and copy constructor
+
 FacilityType::FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score):
 name(name), category(category), price(price), lifeQuality_score(lifeQuality_score), economy_score(economy_score), environment_score(environment_score){}
 
@@ -14,6 +16,7 @@ FacilityType::FacilityType(const FacilityType &type):
 name(type.name), category(type.category), price(type.price), lifeQuality_score(type.lifeQuality_score),economy_score(type.economy_score), environment_score(type.environment_score){}
 
 //FacilityType: methods
+
 const string& FacilityType::getName() const {return name;}
 
 int FacilityType::getCost() const {return price;}
@@ -26,8 +29,9 @@ int FacilityType::getEconomyScore() const{return economy_score;}
 
 FacilityCategory FacilityType::getCategory() const{return category;}
 
+//***************** Facility *****************
 
-//Facility: constructor
+// constructors
 Facility::Facility(const string &name, const string &settlementName, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score):
 FacilityType(name, category, price, lifeQuality_score, economy_score, environment_score), settlementName(settlementName), status(FacilityStatus::UNDER_CONSTRUCTIONS), timeLeft(price){}
 

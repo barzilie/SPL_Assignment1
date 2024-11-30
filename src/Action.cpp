@@ -70,7 +70,6 @@ return result;
 
 //******************* AddPlan *******************
 
-
 //AddPlan: constructor
 AddPlan::AddPlan(const string &settlementName, const string &selectionPolicy):BaseAction("Cannot create this plan"), settlementName(settlementName), selectionPolicy(selectionPolicy){}
 
@@ -179,9 +178,8 @@ void PrintPlanStatus::act(Simulation &simulation){
         simulation.getPlan(this->planId).printStatus();
         complete(); 
     }
-    
-
 }
+
 const string PrintPlanStatus::toString() const {
     string result = "PrintPlanStatus " + to_string(this->planId) + " " + this->getStringStatus();
     return result;
@@ -238,13 +236,13 @@ void PrintActionsLog::act(Simulation &simulation){
     simulation.printActionsLog();
     complete();
 }
+
 const string PrintActionsLog::toString() const{
     string result =  "log" + this->getStringStatus();
     return result;
 }
 
 PrintActionsLog* PrintActionsLog::clone() const {return new PrintActionsLog(*this);}
-
 
 
 //******************* Close *******************
@@ -281,9 +279,8 @@ void BackupSimulation::act(Simulation &simulation){
     if(backup){delete backup;}
     backup = simulation.clone();
     complete();
-    
-
 }
+
 const string BackupSimulation::toString() const {
     string result =  "Backup " + this->getStringStatus();
     return result;
@@ -294,8 +291,7 @@ BackupSimulation* BackupSimulation::clone() const{return new BackupSimulation(*t
 
 //******************* RestoreSimulation *******************
 
-//restoresimulation: constructor
-//building an assignment operator here for simulation
+//RestoreSimulation: constructor
 RestoreSimulation::RestoreSimulation():BaseAction("No backup available"){}
 
 //RestoreSimulation: copy constructor
@@ -310,10 +306,8 @@ void RestoreSimulation::act(Simulation &simulation){
     else{
        error(this->getErrorMsg());
     }
-    
-    
-
 }
+
 const string RestoreSimulation::toString() const {
     string result =  "RestoreSimulation" + this->getStringStatus();
     return result;

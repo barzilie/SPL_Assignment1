@@ -5,7 +5,6 @@
 #include "Facility.h"
 #include "Plan.h"
 #include "Settlement.h"
-
 using std::string;
 using std::vector;
 
@@ -31,12 +30,12 @@ class Simulation {
         void printActionsLog() const; //added function
         Simulation* clone() const; //added function
 
-        //rule of 3 additions
+        //rule of 3 
         Simulation(const Simulation& other);
         Simulation& operator=(const Simulation& other);
         ~Simulation(); 
 
-        //rule of 5 additions
+        //rule of 5 
         Simulation(Simulation&& other);
         Simulation& operator=(Simulation&& other);
 
