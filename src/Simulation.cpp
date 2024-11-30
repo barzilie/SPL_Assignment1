@@ -215,24 +215,23 @@ Plan& Simulation::getPlan(const int planId){
         return false;
     }
 
-    Plan p = Plan(getPlan(planId));
+    Plan& p = getPlan(planId);
 
     if(newPolicy == "bal"){
         int LifeQualityScore = p.getlifeQualityScore() + p.getlifeQualityScore_UC();
         int EconomyScore = p.getEconomyScore() + p.getEconomyScore_UC();
         int EnvironmentScore = p.getEnvironmentScore() + p.getEnvironmentScore_UC();
-        this->getPlan(planId).setSelectionPolicy(new BalancedSelection(LifeQualityScore, EconomyScore, EnvironmentScore));
+        p.setSelectionPolicy(new BalancedSelection(LifeQualityScore, EconomyScore, EnvironmentScore));
     }
     else if(newPolicy == "eco"){
-        this->getPlan(planId).setSelectionPolicy(new EconomySelection());
+        p.setSelectionPolicy(new EconomySelection());
     }
     else if(newPolicy == "nve"){
-        this->getPlan(planId).setSelectionPolicy(new NaiveSelection());
+        p.setSelectionPolicy(new NaiveSelection());
     }
     else if(newPolicy == "env"){
-        this->getPlan(planId).setSelectionPolicy(new SustainabilitySelection());
+        p.setSelectionPolicy(new SustainabilitySelection());
     }
-
     return true;
 
  }

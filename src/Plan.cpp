@@ -71,8 +71,10 @@ const int Plan::getEconomyScore() const{return economy_score;}
 const int Plan::getEnvironmentScore() const{return environment_score;}
 
 void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy){
-    delete Plan::selectionPolicy;
-    this->selectionPolicy = selectionPolicy->clone();
+    if(this->selectionPolicy){
+        delete this->selectionPolicy;
+    }
+    this->selectionPolicy = selectionPolicy;
 }
 
 void Plan::step(){
