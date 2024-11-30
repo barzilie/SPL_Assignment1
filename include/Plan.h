@@ -14,8 +14,8 @@ enum class PlanStatus {
 class Plan {
     public:
         Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions);
-        Plan(const Plan& other );
-        Plan& operator=(const Plan& other) = delete;
+        Plan(const Plan &other);
+        Plan& operator=(const Plan& other);
         virtual ~Plan();
         const int getlifeQualityScore() const;
         const int getEconomyScore() const;
@@ -23,11 +23,13 @@ class Plan {
         void setSelectionPolicy(SelectionPolicy *selectionPolicy);
         void step();
         void printStatus();
+        void printForClose();
         const vector<Facility*> &getFacilities() const;
         void addFacility(Facility* facility);
         const string toString() const;
         const int getID() const;
         const string getSelectionPolicy() const;
+        const string getSelectionPolicyFN() const;
         //new getters that return the scores of the under construction facilities
         const int getlifeQualityScore_UC() const;
         const int getEconomyScore_UC() const;

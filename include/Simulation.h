@@ -5,6 +5,7 @@
 #include "Facility.h"
 #include "Plan.h"
 #include "Settlement.h"
+
 using std::string;
 using std::vector;
 
@@ -24,7 +25,11 @@ class Simulation {
         bool isPlanExists(const int planId); //added function
         Settlement &getSettlement(const string &settlementName);
         Plan &getPlan(const int planId);
-        bool changePlanPolicy(const int planId, const string &newPolicy);
+        bool changePlanPolicy(const int planId, const string &newPolicy); //added fuction
+        void clearSettlements(); //added fuction
+        void clearActionsLog(); //added fuction
+        void printActionsLog() const; //added function
+        Simulation* clone() const; //added function
 
         //rule of 3 additions
         Simulation(const Simulation& other);
