@@ -26,6 +26,18 @@ Plan::Plan(const Plan& other):plan_id(other.plan_id), settlement(other.settlemen
     }
 }
 
+//special copy constructor for passing reference to settlement
+Plan::Plan(const Plan& other, const Settlement &settlement):plan_id(other.plan_id), settlement(settlement), selectionPolicy(other.selectionPolicy->clone()), status(other.status), facilities{}, underConstruction{}, facilityOptions(other.facilityOptions), life_quality_score(other.life_quality_score), economy_score(other.economy_score), environment_score(other.environment_score) {
+    int facilities_size = static_cast<int>(other.facilities.size()); //casting size to int (otherwise can't compare i to size)
+    int underConstruction_size = static_cast<int>(other.underConstruction.size()); //casting size to int (otherwise can't compare i to size)
+    for(int i=0; i<facilities_size; i++){
+        facilities.push_back(other.facilities.at(i)->clone());
+    }
+    for(int i=0; i<underConstruction_size; i++){
+        underConstruction.push_back(other.underConstruction.at(i)->clone());
+    }
+}
+
 //Plan: copy assignment operator
 // Plan& Plan::operator=(const Plan& other){
 //     if(&other != this){
@@ -144,7 +156,7 @@ void Plan::printStatus(){
 void Plan::printForClose(){
     std::cout << this->toString() << std::endl;
     std::cout << settlement.toString()<< std::endl;
-    std::cout << "SelectionPolicy:" << selectionPolicy->toString() <<std::endl;
+    //std::cout << "SelectionPolicy:" << selectionPolicy->toString() <<std::endl;
     std::cout << "LifeQualityScore:" << this->getlifeQualityScore()<< std::endl;
     std::cout << "EconomyScore:" << this->getEconomyScore()<< std::endl;
     std::cout << "EnvrionmentScore:" << this->getEnvironmentScore()<< std::endl;
@@ -198,4 +210,6 @@ const int Plan::getEnvironmentScore_UC() const{
     return environmentScore_UC;
 }
 
-
+const string Plan::getSettlementName() const{
+    return settlement.getName();
+}

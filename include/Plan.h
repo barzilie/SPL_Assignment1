@@ -15,6 +15,7 @@ class Plan {
     public:
         Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions);
         Plan(const Plan &other);
+        Plan(const Plan& other, const Settlement &settlement);
         Plan& operator=(const Plan& other);
         virtual ~Plan();
         const int getlifeQualityScore() const;
@@ -34,6 +35,7 @@ class Plan {
         const int getlifeQualityScore_UC() const;
         const int getEconomyScore_UC() const;
         const int getEnvironmentScore_UC() const;
+        const string getSettlementName() const;
 
     private:
         int plan_id;

@@ -43,19 +43,21 @@ Simulation::Simulation(const string &configFilePath):isRunning(false), planCount
                 if(args[0] == "plan"){
                         if(args[2] == "bal"){
                             plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new BalancedSelection(0,0,0), this->facilitiesOptions));
+                            this->planCounter++;
                         }
                         else if(args[2] == "eco"){
                             plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new EconomySelection(), this->facilitiesOptions));
+                            this->planCounter++;
                         }
                         else if(args[2] == "nve"){
                             plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new NaiveSelection(), this->facilitiesOptions));
+                            this->planCounter++;
                         }
                         else if(args[2] == "env"){
                             plans.push_back(Plan(this->planCounter, this->getSettlement(args[1]), new SustainabilitySelection(), this->facilitiesOptions));
-                        }  
-                        this->planCounter++;   
+                            this->planCounter++;
+                        }     
                     }
-                
                 }
         } 
 }
@@ -264,7 +266,7 @@ Simulation *Simulation::clone() const{
 
 //rule of 3 additions
 
- Simulation::Simulation(const Simulation& other): isRunning(other.isRunning), planCounter(other.planCounter), actionsLog{}, plans(other.plans), settlements{}, facilitiesOptions(other.facilitiesOptions){
+ Simulation::Simulation(const Simulation& other): isRunning(other.isRunning), planCounter(other.planCounter), actionsLog{}, settlements{}, facilitiesOptions(other.facilitiesOptions){
     int actions_size = static_cast<int>(other.actionsLog.size()); //casting size to int (otherwise can't compare i to size)
     int settlements_size = static_cast<int>(other.settlements.size()); //casting size to int (otherwise can't compare i to size)
     for(int i=0; i<actions_size; i++){
@@ -274,6 +276,12 @@ Simulation *Simulation::clone() const{
         //maybe crete clone instead of making "new" statement
         settlements.push_back(new Settlement(*(other.settlements.at(i))));
     }
+
+    int plans_size = static_cast<int>(other.plans.size()); //casting size to int (otherwise can't compare i to size)
+    for(int i=0; i< plans_size; i++){
+        Settlement& settle = getSettlement(other.plans.at(i).getSettlementName());
+        plans.push_back(Plan(other.plans.at(i), settle));
+    }    
 
 }
 Simulation& Simulation::operator=(const Simulation& other){
@@ -285,26 +293,27 @@ Simulation& Simulation::operator=(const Simulation& other){
         clearSettlements();
         clearActionsLog();
 
-        int plans_size = static_cast<int>(other.plans.size()); //casting size to int (otherwise can't compare i to size)
-        for(int i=0; i< plans_size; i++){
-            plans.push_back(Plan(other.plans.at(i)));
-        }
-
+        int settlements_size = static_cast<int>(other.settlements.size()); //casting size to int (otherwise can't compare i to size)
+        for(int i=0; i<settlements_size; i++){
+            //maybe crete clone instead of making "new" statement
+            settlements.push_back(new Settlement(*(other.settlements.at(i))));
+        } 
         int facilities_size = static_cast<int>(other.facilitiesOptions.size()); //casting size to int (otherwise can't compare i to size)
         for(int i=0; i<facilities_size; i++){
             facilitiesOptions.push_back(FacilityType(other.facilitiesOptions.at(i)));
+        }
+
+        int plans_size = static_cast<int>(other.plans.size()); //casting size to int (otherwise can't compare i to size)
+        for(int i=0; i< plans_size; i++){
+            Settlement& settle = getSettlement(other.plans.at(i).getSettlementName());
+            plans.push_back(Plan(other.plans.at(i), settle));
         }
 
         int actions_size = static_cast<int>(other.actionsLog.size()); //casting size to int (otherwise can't compare i to size)
         for(int i=0; i<actions_size; i++){
             actionsLog.push_back(other.actionsLog.at(i)->clone());
         }
-
-        int settlements_size = static_cast<int>(other.settlements.size()); //casting size to int (otherwise can't compare i to size)
-        for(int i=0; i<settlements_size; i++){
-            //maybe crete clone instead of making "new" statement
-            settlements.push_back(new Settlement(*(other.settlements.at(i))));
-        }   
+  
     }
     return *this;
 }

@@ -285,7 +285,7 @@ void BackupSimulation::act(Simulation &simulation){
 
 }
 const string BackupSimulation::toString() const {
-    string result =  "BackupSimulation" + this->getStringStatus();
+    string result =  "Backup " + this->getStringStatus();
     return result;
 }
 
