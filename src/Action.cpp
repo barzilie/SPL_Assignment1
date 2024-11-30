@@ -309,7 +309,7 @@ void RestoreSimulation::act(Simulation &simulation){
 }
 
 const string RestoreSimulation::toString() const {
-    string result =  "RestoreSimulation" + this->getStringStatus();
+    string result =  "Restore " + this->getStringStatus();
     return result;
 }
 
