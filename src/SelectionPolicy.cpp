@@ -59,14 +59,11 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
         int maximum = *maxi;
         int minimum = *mini;
         diffs[i] = maximum - minimum;
-        cout << "diff: " << diffs[i] << " mimish " << i << endl;
         if (diffs[i] < minDiff) {
             minDiff = diffs[i];
             indexOfMin = i;
         }
-        cout << "min: " << minDiff << " mimish" << "i: " << i << endl;
     }
-    cout << "index of min: "<< indexOfMin << endl;
     return facilitiesOptions[indexOfMin];
 }
 
